@@ -3,59 +3,55 @@ import React, { useEffect, useState, useRef } from 'react';
 const SCRIPT_URL = "https://sdk.mercadopago.com/js/v2";
 
 const PaymentModal = ({ plan, onClose }) => {
-  const [isLoading, setIsLoading] = useState(true); // Inicia en true hasta que el script cargue
+  const [isLoading, setIsLoading] = useState(true);
   const cardFormRef = useRef(null);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
-  const loadMercadoPagoScript = () => {
-    return new Promise((resolve, reject) => {
-      if (window.MercadoPago) {
-        return resolve();
-      }
-      const script = document.createElement("script");
-      script.src = SCRIPT_URL;
-      script.async = true;
-      script.onload = () => {
-        resolve();
-      };
-      script.onerror = () => {
-        reject(new Error("No se pudo cargar el script de Mercado Pago."));
-      };
-      document.body.appendChild(script);
-    });
-  };
-
-  const handlePayment = async (cardFormData) => {
-    // ... (La función handlePayment se queda exactamente igual que en la versión anterior)
-  };
-
+  // Carga el script de Mercado Pago solo una vez
   useEffect(() => {
-    if (!plan) return;
+    const script = document.createElement("script");
+    script.src = SCRIPT_URL;
+    script.async = true;
+    script.onload = () => setIsScriptLoaded(true);
+    script.onerror = () => alert("No se pudo cargar el script de Mercado Pago.");
+    document.body.appendChild(script);
 
-    loadMercadoPagoScript()
-      .then(() => {
-        setIsLoading(false); // El script cargó, podemos mostrar el form
-        const mp = new window.MercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY);
-        const cardForm = mp.cardForm({
-          amount: String(plan.price),
-          autoMount: true,
-          form: { id: "form-checkout" /* ... etc ... */ },
-          callbacks: {
-            onSubmit: event => {
-              event.preventDefault();
-              const cardFormData = cardFormRef.current.getCardFormData();
-              handlePayment(cardFormData);
-            },
-            // ... otros callbacks
+    return () => {
+      // Limpia el script si el componente se desmonta
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  // Inicializa y destruye el Card Form
+  useEffect(() => {
+    if (plan && isScriptLoaded) {
+      setIsLoading(false);
+      const mp = new window.MercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY);
+      const cardForm = mp.cardForm({
+        amount: String(plan.price),
+        autoMount: true,
+        form: { id: "form-checkout" /* ... etc ... */ },
+        callbacks: {
+          onSubmit: event => {
+            event.preventDefault();
+            const cardFormData = cardFormRef.current.getCardFormData();
+            // Aquí iría la lógica de handlePayment que ya teníamos
           },
-        });
-        cardFormRef.current = cardForm;
-      })
-      .catch(error => {
-        console.error(error);
-        alert(error.message);
+          // ... otros callbacks
+        },
       });
+      cardFormRef.current = cardForm;
 
-  }, [plan]);
+      // **LA SOLUCIÓN CLAVE ESTÁ AQUÍ**
+      // Retornamos una función de "limpieza" que se ejecuta cuando el modal se cierra
+      return () => {
+        if (cardFormRef.current) {
+          cardFormRef.current.unmount();
+          cardFormRef.current = null;
+        }
+      };
+    }
+  }, [plan, isScriptLoaded]);
 
   if (!plan) return null;
 
@@ -68,15 +64,15 @@ const PaymentModal = ({ plan, onClose }) => {
         <p>${plan.price} MXN</p>
         
         {isLoading ? (
-          <p>Cargando formulario de pago...</p>
+          <p>Cargando...</p>
         ) : (
           <form id="form-checkout">
-            {/* ... (los divs del formulario son iguales) */}
-            <button type="submit" id="form-submit-btn">Pagar</button>
+            {/* ... divs del formulario ... */}
+            <button type="submit">Pagar</button>
           </form>
         )}
       </div>
-      {/* ... (los estilos son iguales) */}
+      {/* ... estilos ... */}
     </div>
   );
 };
