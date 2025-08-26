@@ -5,7 +5,13 @@ let cardForm = null; // Mantenemos el cardForm fuera del estado de React
 
 const PaymentModal = ({ plan, onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [isScriptLoaded, setIsScriptLoaded] = useState(window.MercadoPago ? true : false);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+
+useEffect(() => {
+  if (window.MercadoPago) {
+    setIsScriptLoaded(true);
+  }
+}, []);
 
   const handlePayment = async (cardFormData) => {
     setIsLoading(true);
