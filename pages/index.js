@@ -137,7 +137,7 @@ const HomePage = () => {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Cormorant+Garamond:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-        <script src="https://sdk.mercadopago.com/js/v2"></script>
+       
       </Head>
       <canvas id="particle-canvas"></canvas>
       <div className="cursor-dot"></div>
