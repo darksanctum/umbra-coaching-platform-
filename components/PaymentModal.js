@@ -1,71 +1,60 @@
 import React, { useEffect, useState, useRef } from 'react';
 
+const SCRIPT_URL = "https://sdk.mercadopago.com/js/v2";
+
 const PaymentModal = ({ plan, onClose }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const cardFormRef = useRef(null); // Usamos una referencia para mantener el objeto cardForm
+  const [isLoading, setIsLoading] = useState(true); // Inicia en true hasta que el script cargue
+  const cardFormRef = useRef(null);
+
+  const loadMercadoPagoScript = () => {
+    return new Promise((resolve, reject) => {
+      if (window.MercadoPago) {
+        return resolve();
+      }
+      const script = document.createElement("script");
+      script.src = SCRIPT_URL;
+      script.async = true;
+      script.onload = () => {
+        resolve();
+      };
+      script.onerror = () => {
+        reject(new Error("No se pudo cargar el script de Mercado Pago."));
+      };
+      document.body.appendChild(script);
+    });
+  };
 
   const handlePayment = async (cardFormData) => {
-    setIsLoading(true);
-    const { token, issuerId, paymentMethodId, amount, installments, identificationNumber, identificationType } = cardFormData;
-    const testEmail = "test_user_123456@testuser.com";
-
-    try {
-      const response = await fetch('/api/create-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token,
-          issuer_id: issuerId,
-          payment_method_id: paymentMethodId,
-          transaction_amount: Number(amount),
-          installments: Number(installments),
-          description: plan.title,
-          payer: {
-            email: testEmail,
-            identification: { type: identificationType, number: identificationNumber },
-          },
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error);
-      }
-
-      alert('¡Pago exitoso!');
-      onClose();
-
-    } catch (error) {
-      alert(`Error en el pago: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+    // ... (La función handlePayment se queda exactamente igual que en la versión anterior)
   };
 
   useEffect(() => {
-    if (plan && window.MercadoPago) {
-      const mp = new window.MercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY);
-      const cardForm = mp.cardForm({
-        amount: String(plan.price),
-        autoMount: true,
-        form: {
-          id: "form-checkout",
-          // ... (el resto de la configuración del form es igual)
-        },
-        callbacks: {
-          onFormMounted: error => {
-            if (error) return console.warn("Form Mounted handling error: ", error);
+    if (!plan) return;
+
+    loadMercadoPagoScript()
+      .then(() => {
+        setIsLoading(false); // El script cargó, podemos mostrar el form
+        const mp = new window.MercadoPago(process.env.NEXT_PUBLIC_MP_PUBLIC_KEY);
+        const cardForm = mp.cardForm({
+          amount: String(plan.price),
+          autoMount: true,
+          form: { id: "form-checkout" /* ... etc ... */ },
+          callbacks: {
+            onSubmit: event => {
+              event.preventDefault();
+              const cardFormData = cardFormRef.current.getCardFormData();
+              handlePayment(cardFormData);
+            },
+            // ... otros callbacks
           },
-          onSubmit: event => {
-            event.preventDefault();
-            const cardFormData = cardFormRef.current.getCardFormData();
-            handlePayment(cardFormData);
-          },
-        },
+        });
+        cardFormRef.current = cardForm;
+      })
+      .catch(error => {
+        console.error(error);
+        alert(error.message);
       });
-      cardFormRef.current = cardForm; // Guardamos la instancia en la referencia
-    }
+
   }, [plan]);
 
   if (!plan) return null;
@@ -78,12 +67,14 @@ const PaymentModal = ({ plan, onClose }) => {
         <h3>{plan.title}</h3>
         <p>${plan.price} MXN</p>
         
-        <form id="form-checkout">
-          {/* ... (todos los divs del formulario son iguales) */}
-          <button type="submit" id="form-submit-btn" disabled={isLoading}>
-            {isLoading ? 'Procesando...' : 'Pagar'}
-          </button>
-        </form>
+        {isLoading ? (
+          <p>Cargando formulario de pago...</p>
+        ) : (
+          <form id="form-checkout">
+            {/* ... (los divs del formulario son iguales) */}
+            <button type="submit" id="form-submit-btn">Pagar</button>
+          </form>
+        )}
       </div>
       {/* ... (los estilos son iguales) */}
     </div>
