@@ -212,8 +212,8 @@ const HomePage = () => {
                     <li><b>Sincronización quincenal por videollamada</b></li>
                   </ul>
                   <div className="checkout-btn-container">
-                    <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button">Forjar Pacto</button>
-                  </div>
+  <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button">Forjar Pacto</button>
+</div>
                 </div>
               </div>
 
@@ -228,9 +228,9 @@ const HomePage = () => {
                     <li>Ajustes prioritarios del sistema</li>
                     <li><b>La transformación más profunda</b></li>
                   </ul>
-                  <div className="checkout-btn-container">
-                    <button onClick={() => openModal({ title: 'Metamorfosis Completa', price: 4299 })} className="button">Forjar Pacto</button>
-                  </div>
+                 <div className="checkout-btn-container">
+  <button onClick={() => openModal({ title: 'Metamorfosis Completa', price: 4299 })} className="button">Forjar Pacto</button>
+</div>
                 </div>
               </div>
             </div>
