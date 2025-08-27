@@ -20,12 +20,21 @@ export default async function handler(req, res) {
     const payment = new Payment(client);
 
     // Validar datos requeridos
-    const requiredFields = ['transaction_amount', 'token', 'description', 'installments', 'payment_method_id', 'payer'];
+    const requiredFields = ['transaction_amount', 'token', 'description', 'payment_method_id'];
     const missingFields = requiredFields.filter(field => !req.body[field]);
     
     if (missingFields.length > 0) {
+      console.error('Campos faltantes:', missingFields, 'Datos recibidos:', req.body);
       return res.status(400).json({ 
         error: `Campos faltantes: ${missingFields.join(', ')}` 
+      });
+    }
+
+    // Validar estructura del payer
+    if (!req.body.payer || !req.body.payer.email) {
+      console.error('Datos del payer incompletos:', req.body.payer);
+      return res.status(400).json({ 
+        error: 'Datos del pagador incompletos' 
       });
     }
 
@@ -33,14 +42,14 @@ export default async function handler(req, res) {
       transaction_amount: parseFloat(req.body.transaction_amount),
       token: req.body.token,
       description: req.body.description,
-      installments: parseInt(req.body.installments),
+      installments: parseInt(req.body.installments) || 1,
       payment_method_id: req.body.payment_method_id,
       issuer_id: req.body.issuer_id,
       payer: {
         email: req.body.payer.email,
         identification: {
-          type: req.body.payer.identification.type,
-          number: req.body.payer.identification.number,
+          type: req.body.payer.identification?.type || 'CURP',
+          number: req.body.payer.identification?.number || '12345678901234567890',
         },
       },
       // Cambiar a tu URL real de webhook
