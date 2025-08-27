@@ -4,6 +4,44 @@ const PaymentModal = ({ plan, onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [cardForm, setCardForm] = useState(null);
 
+  const handlePayment = async (cardFormData) => {
+    setIsLoading(true);
+    const { token, issuerId, paymentMethodId, amount, installments, identificationNumber, identificationType } = cardFormData;
+    const testEmail = "test_user_123456@testuser.com";
+
+    try {
+      const response = await fetch('/api/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          issuer_id: issuerId,
+          payment_method_id: paymentMethodId,
+          transaction_amount: Number(amount),
+          installments: Number(installments),
+          description: plan.title,
+          payer: {
+            email: testEmail,
+            identification: { type: identificationType, number: identificationNumber },
+          },
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || 'Error desconocido');
+      }
+
+      alert('¡Pago exitoso!');
+      onClose();
+
+    } catch (error) {
+      alert(`Error en el pago: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!plan) return;
 
@@ -24,19 +62,27 @@ const PaymentModal = ({ plan, onClose }) => {
       form = mp.cardForm({
         amount: String(plan.price),
         autoMount: true,
-        form: { id: "form-checkout" /* ... etc ... */ },
+        form: {
+          id: "form-checkout",
+          cardholderName: { id: "form-cardholderName", placeholder: "Titular" },
+          cardholderEmail: { id: "form-cardholderEmail", placeholder: "Email" },
+          cardNumber: { id: "form-cardNumber", placeholder: "Número de tarjeta" },
+          cardExpirationDate: { id: "form-cardExpirationDate", placeholder: "MM/YY" },
+          securityCode: { id: "form-securityCode", placeholder: "CVC" },
+          installments: { id: "form-installments", placeholder: "Cuotas" },
+          identificationType: { id: "form-identificationType", placeholder: "Tipo de Doc." },
+          identificationNumber: { id: "form-identificationNumber", placeholder: "Número de Doc." },
+          issuer: { id: "form-issuer", placeholder: "Banco" },
+        },
         callbacks: {
           onFormMounted: error => {
             if (error) return console.warn("Form Mounted error: ", error);
             setIsLoading(false);
           },
-          onSubmit: async event => {
+          onSubmit: event => {
             event.preventDefault();
-            setIsLoading(true);
             const cardFormData = form.getCardFormData();
-            // Lógica de handlePayment aquí...
-            console.log(cardFormData);
-            setIsLoading(false);
+            handlePayment(cardFormData);
           },
         },
       });
@@ -46,7 +92,6 @@ const PaymentModal = ({ plan, onClose }) => {
     loadAndInit();
 
     return () => {
-      // Limpieza
       if (form) {
         form.unmount();
       }
@@ -65,8 +110,18 @@ const PaymentModal = ({ plan, onClose }) => {
         
         {isLoading && <p>Cargando formulario...</p>}
         <form id="form-checkout" style={{ display: isLoading ? 'none' : 'block' }}>
-            {/* ... divs del formulario ... */}
-            <button type="submit" disabled={isLoading}>Pagar</button>
+            <div id="form-cardholderName"></div>
+            <div id="form-cardholderEmail"></div>
+            <div id="form-cardNumber"></div>
+            <div id="form-cardExpirationDate"></div>
+            <div id="form-securityCode"></div>
+            <div id="form-installments"></div>
+            <div id="form-identificationType"></div>
+            <div id="form-identificationNumber"></div>
+            <div id="form-issuer"></div>
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? 'Procesando...' : 'Pagar'}
+            </button>
         </form>
       </div>
       {/* ... estilos ... */}
