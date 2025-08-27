@@ -72,23 +72,51 @@ const PaymentModal = ({ plan, onClose }) => {
           });
         }
         
-        console.log('Inicializando Mercado Pago con clave:', publicKey.substring(0, 10) + '...');
+        console.log('Inicializando Mercado Pago...');
         mp = new window.MercadoPago(publicKey);
         
+        // Configuración del formulario con la estructura correcta
         form = mp.cardForm({
           amount: String(plan.price),
           autoMount: true,
           form: {
             id: "form-checkout",
-            cardholderName: { id: "form-cardholderName", placeholder: "Titular" },
-            cardholderEmail: { id: "form-cardholderEmail", placeholder: "Email" },
-            cardNumber: { id: "form-cardNumber", placeholder: "Número de tarjeta" },
-            cardExpirationDate: { id: "form-cardExpirationDate", placeholder: "MM/YY" },
-            securityCode: { id: "form-securityCode", placeholder: "CVC" },
-            installments: { id: "form-installments", placeholder: "Cuotas" },
-            identificationType: { id: "form-identificationType", placeholder: "Tipo de Doc." },
-            identificationNumber: { id: "form-identificationNumber", placeholder: "Número de Doc." },
-            issuer: { id: "form-issuer", placeholder: "Banco" },
+            cardholderName: { 
+              id: "form-checkout__cardholderName", 
+              placeholder: "Titular de la tarjeta" 
+            },
+            cardholderEmail: { 
+              id: "form-checkout__cardholderEmail", 
+              placeholder: "Email" 
+            },
+            cardNumber: { 
+              id: "form-checkout__cardNumber", 
+              placeholder: "Número de tarjeta" 
+            },
+            cardExpirationDate: { 
+              id: "form-checkout__cardExpirationDate", 
+              placeholder: "MM/YY" 
+            },
+            securityCode: { 
+              id: "form-checkout__securityCode", 
+              placeholder: "Código de seguridad" 
+            },
+            installments: { 
+              id: "form-checkout__installments", 
+              placeholder: "Cuotas" 
+            },
+            identificationType: { 
+              id: "form-checkout__identificationType", 
+              placeholder: "Tipo de documento" 
+            },
+            identificationNumber: { 
+              id: "form-checkout__identificationNumber", 
+              placeholder: "Número de documento" 
+            },
+            issuer: { 
+              id: "form-checkout__issuer", 
+              placeholder: "Banco emisor" 
+            },
           },
           callbacks: {
             onFormMounted: error => {
@@ -144,32 +172,40 @@ const PaymentModal = ({ plan, onClose }) => {
         <p>${plan.price} MXN</p>
         
         {error && (
-          <div className="error-message" style={{
-            color: 'red',
-            background: '#ffebee',
-            padding: '10px',
-            borderRadius: '4px',
-            marginBottom: '10px'
-          }}>
+          <div className="error-message">
             {error}
           </div>
         )}
         
-        {isLoading && !error && <p>Cargando formulario...</p>}
+        {isLoading && !error && <p>Cargando formulario de pago...</p>}
         
         <form id="form-checkout" style={{ display: (isLoading || error) ? 'none' : 'block' }}>
-            <div id="form-cardholderName"></div>
-            <div id="form-cardholderEmail"></div>
-            <div id="form-cardNumber"></div>
-            <div id="form-cardExpirationDate"></div>
-            <div id="form-securityCode"></div>
-            <div id="form-installments"></div>
-            <div id="form-identificationType"></div>
-            <div id="form-identificationNumber"></div>
-            <div id="form-issuer"></div>
-            <button type="submit" disabled={isLoading || error}>
-              {isLoading ? 'Procesando...' : 'Pagar'}
-            </button>
+          <div className="form-row">
+            <div id="form-checkout__cardNumber" className="form-field"></div>
+          </div>
+          <div className="form-row">
+            <div id="form-checkout__cardExpirationDate" className="form-field"></div>
+            <div id="form-checkout__securityCode" className="form-field"></div>
+          </div>
+          <div className="form-row">
+            <div id="form-checkout__cardholderName" className="form-field"></div>
+          </div>
+          <div className="form-row">
+            <div id="form-checkout__cardholderEmail" className="form-field"></div>
+          </div>
+          <div className="form-row">
+            <div id="form-checkout__identificationType" className="form-field"></div>
+            <div id="form-checkout__identificationNumber" className="form-field"></div>
+          </div>
+          <div className="form-row">
+            <div id="form-checkout__issuer" className="form-field"></div>
+          </div>
+          <div className="form-row">
+            <div id="form-checkout__installments" className="form-field"></div>
+          </div>
+          <button type="submit" disabled={isLoading || error} className="submit-button">
+            {isLoading ? 'Procesando...' : 'Pagar ahora'}
+          </button>
         </form>
       </div>
 
@@ -186,16 +222,19 @@ const PaymentModal = ({ plan, onClose }) => {
           align-items: center;
           z-index: 1000;
         }
+        
         .modal-content {
           background: white;
           padding: 2rem;
-          border-radius: 8px;
+          border-radius: 12px;
           max-width: 500px;
           width: 90%;
           max-height: 90vh;
           overflow-y: auto;
           position: relative;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
+        
         .close-button {
           position: absolute;
           top: 1rem;
@@ -205,29 +244,82 @@ const PaymentModal = ({ plan, onClose }) => {
           font-size: 1.5rem;
           cursor: pointer;
           color: #666;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
+        
         .close-button:hover {
+          background: #f0f0f0;
           color: #000;
         }
-        #form-checkout div {
-          margin-bottom: 1rem;
+        
+        .error-message {
+          color: #d32f2f;
+          background: #ffebee;
+          padding: 12px;
+          border-radius: 6px;
+          margin-bottom: 16px;
+          border: 1px solid #ffcdd2;
         }
-        button[type="submit"] {
+        
+        #form-checkout {
+          margin-top: 20px;
+        }
+        
+        .form-row {
+          display: flex;
+          gap: 12px;
+          margin-bottom: 16px;
+        }
+        
+        .form-field {
+          flex: 1;
+          min-height: 50px;
+        }
+        
+        .submit-button {
           background: #009ee3;
           color: white;
           border: none;
-          padding: 12px 24px;
-          border-radius: 4px;
+          padding: 16px 24px;
+          border-radius: 8px;
           cursor: pointer;
           font-size: 16px;
+          font-weight: 600;
           width: 100%;
+          transition: all 0.3s ease;
         }
-        button[type="submit"]:disabled {
-          background: #ccc;
+        
+        .submit-button:disabled {
+          background: #cccccc;
           cursor: not-allowed;
         }
-        button[type="submit"]:hover:not(:disabled) {
+        
+        .submit-button:hover:not(:disabled) {
           background: #007ab8;
+          transform: translateY(-1px);
+        }
+        
+        h2 {
+          margin: 0 0 8px 0;
+          color: #333;
+        }
+        
+        h3 {
+          margin: 0 0 4px 0;
+          color: #666;
+          font-weight: 500;
+        }
+        
+        p {
+          margin: 0 0 16px 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: #009ee3;
         }
       `}</style>
     </div>
