@@ -78,7 +78,21 @@ const PaymentModal = ({ plan, onClose }) => {
                     body: JSON.stringify(paymentData),
                   });
 
-                  const result = await response.json();
+                  console.log('Response status:', response.status);
+                  console.log('Response headers:', response.headers);
+
+                  // Verificar si la respuesta tiene contenido
+                  const responseText = await response.text();
+                  console.log('Response text:', responseText);
+
+                  // Intentar parsear el JSON
+                  let result;
+                  try {
+                    result = responseText ? JSON.parse(responseText) : {};
+                  } catch (parseError) {
+                    console.error('Error parsing JSON:', parseError);
+                    throw new Error(`Error del servidor: ${response.status} - ${responseText}`);
+                  }
                   
                   if (!response.ok) {
                     throw new Error(result.error || 'Error en el pago');
