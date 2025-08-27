@@ -47,24 +47,35 @@ const PaymentModal = ({ plan, onClose }) => {
               },
               onSubmit: async (cardFormData) => {
                 try {
+                  console.log('Datos recibidos:', cardFormData);
+                  
+                  // Verificar datos obligatorios
+                  if (!cardFormData.token || !cardFormData.payment_method_id) {
+                    throw new Error('Faltan datos de la tarjeta');
+                  }
+
+                  const paymentData = {
+                    token: cardFormData.token,
+                    issuer_id: cardFormData.issuer_id,
+                    payment_method_id: cardFormData.payment_method_id,
+                    transaction_amount: Number(plan.price),
+                    installments: Number(cardFormData.installments) || 1,
+                    description: plan.title,
+                    payer: {
+                      email: cardFormData.payer?.email || 'test_user_123456@testuser.com',
+                      identification: {
+                        type: cardFormData.payer?.identification?.type || 'CURP',
+                        number: cardFormData.payer?.identification?.number || '12345678901234567890',
+                      },
+                    },
+                  };
+
+                  console.log('Enviando datos:', paymentData);
+
                   const response = await fetch('/api/create-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      token: cardFormData.token,
-                      issuer_id: cardFormData.issuer_id,
-                      payment_method_id: cardFormData.payment_method_id,
-                      transaction_amount: plan.price,
-                      installments: cardFormData.installments,
-                      description: plan.title,
-                      payer: {
-                        email: cardFormData.payer.email,
-                        identification: {
-                          type: cardFormData.payer.identification.type,
-                          number: cardFormData.payer.identification.number,
-                        },
-                      },
-                    }),
+                    body: JSON.stringify(paymentData),
                   });
 
                   const result = await response.json();
