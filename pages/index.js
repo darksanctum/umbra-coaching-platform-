@@ -179,22 +179,24 @@ const HomePage = () => {
               <p className="section-subtitle">Planes diseñados para adaptarse a tu nivel de compromiso y tus objetivos. Ya sea que busques perder grasa, ganar músculo o mejorar tu rendimiento, aquí comienza tu transformación.</p>
             </div>
 
-            <div className="pricing-grid">
+           <div className="pricing-grid">
+              {/* Plan Coaching Mensual */}
               <div className="pricing-card reveal">
                 <div className="card-content">
-                  <p className="tag">Acceso Total</p>
-                  <h3 className="plan-name">Satori</h3>
-                  <p className="price">$1,020 <span className="price-term">MXN/mes</span></p>
+                  <p className="tag">Acceso por un Mes</p>
+                  <h3 className="plan-name">Coaching Mensual</h3>
+                  <p className="price">$1,199 <span className="price-term">MXN/único</span></p>
                   <ul className="features">
-                    <li>El ecosistema completo de Umbra Coaching</li>
-                    <li>Supervisión y personalización continua</li>
-                    <li>Acceso a la App y Soporte 1-a-1</li>
-                    <li>Comunidad cifrada en Discord</li>
-                    <li>Análisis de ejecución mensual</li>
-                    <li>Acceso a todo el conocimiento arcano</li>
+                    <li>Acceso completo a la plataforma Umbra</li>
+                    <li>Supervisión y seguimiento personalizado</li>
+                    <li>Soporte directo vía Telegram</li>
+                    <li>Análisis de progreso mensual</li>
+                    <li>Ajustes de rutina en tiempo real</li>
+                    <li>Comunidad exclusiva de miembros</li>
+                    <li><b>Válido por 30 días</b></li>
                   </ul>
                   <div className="checkout-btn-container">
-                    <a href="https://www.patreon.com/c/user/membership?u=23723781" target="_blank" className="button">Unirme en Patreon</a>
+                    <button onClick={() => openModal({ title: 'Coaching Mensual', price: 1199 })} className="button">Forjar Pacto</button>
                   </div>
                 </div>
               </div>
@@ -212,8 +214,8 @@ const HomePage = () => {
                     <li><b>Sincronización quincenal por videollamada</b></li>
                   </ul>
                   <div className="checkout-btn-container">
-  <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button">Forjar Pacto</button>
-</div>
+                    <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button">Forjar Pacto</button>
+                  </div>
                 </div>
               </div>
 
@@ -228,13 +230,12 @@ const HomePage = () => {
                     <li>Ajustes prioritarios del sistema</li>
                     <li><b>La transformación más profunda</b></li>
                   </ul>
-                 <div className="checkout-btn-container">
-  <button onClick={() => openModal({ title: 'Metamorfosis Completa', price: 4299 })} className="button">Forjar Pacto</button>
-</div>
+                  <div className="checkout-btn-container">
+                    <button onClick={() => openModal({ title: 'Metamorfosis Completa', price: 4299 })} className="button">Forjar Pacto</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
         </section>
       </main>
 
