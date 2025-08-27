@@ -179,7 +179,7 @@ const HomePage = () => {
               <p className="section-subtitle">Planes diseñados para adaptarse a tu nivel de compromiso y tus objetivos. Ya sea que busques perder grasa, ganar músculo o mejorar tu rendimiento, aquí comienza tu transformación.</p>
             </div>
 
-           <div className="pricing-grid">
+            <div className="pricing-grid">
               {/* Plan Coaching Mensual */}
               <div className="pricing-card reveal">
                 <div className="card-content">
@@ -235,7 +235,8 @@ const HomePage = () => {
                   </div>
                 </div>
               </div>
-  
+            </div>
+          </div>
         </section>
       </main>
 
