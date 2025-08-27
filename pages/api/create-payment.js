@@ -1,6 +1,10 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 
 export default async function handler(req, res) {
+  console.log('=== INICIO DE REQUEST ===');
+  console.log('Method:', req.method);
+  console.log('Body recibido:', req.body);
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
@@ -52,8 +56,8 @@ export default async function handler(req, res) {
           number: req.body.payer.identification?.number || '12345678901234567890',
         },
       },
-      // Cambiar a tu URL real de webhook
-      notification_url: `${process.env.VERCEL_URL || 'https://umbra-coaching-platform-fo04qqgba-carlos-projects-12ab8d68.vercel.app'}/api/payment-webhook`,
+      // URL de webhook corregida
+      notification_url: `https://umbra-coaching-platform-fo04qqgba-carlos-projects-12ab8d68.vercel.app/api/payment-webhook`,
     };
 
     console.log('Datos del pago:', {
@@ -78,12 +82,11 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error("Error detallado al crear el pago:", {
-      message: error.message,
-      cause: error.cause,
-      status: error.status,
-      response: error.cause?.[0]?.description || error.cause?.message,
-    });
+    console.error("=== ERROR COMPLETO ===");
+    console.error("Error message:", error.message);
+    console.error("Error cause:", error.cause);
+    console.error("Error stack:", error.stack);
+    console.error("Error object:", JSON.stringify(error, null, 2));
 
     // Manejar errores específicos de Mercado Pago
     let errorMessage = 'Error interno del servidor';
@@ -91,6 +94,7 @@ export default async function handler(req, res) {
 
     if (error.cause && Array.isArray(error.cause)) {
       const mpError = error.cause[0];
+      console.error("MP Error details:", mpError);
       errorMessage = mpError.description || mpError.message || errorMessage;
       
       // Errores comunes de Mercado Pago
@@ -103,6 +107,10 @@ export default async function handler(req, res) {
     } else if (error.message) {
       errorMessage = error.message;
     }
+
+    console.error("=== ENVIANDO RESPUESTA DE ERROR ===");
+    console.error("Status:", statusCode);
+    console.error("Message:", errorMessage);
 
     res.status(statusCode).json({ 
       error: errorMessage,
