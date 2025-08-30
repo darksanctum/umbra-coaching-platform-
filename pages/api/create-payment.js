@@ -57,7 +57,7 @@ export default async function handler(req, res) {
         },
       },
       // URL de webhook corregida
-      notification_url: `https://umbra-coaching-platform-d5dnnslmn-carlos-projects-12ab8d68.vercel.app/api/payment-webhook`,
+      notification_url: `https://umbratraining.com/api/payment-webhook`,
     };
 
     console.log('Datos del pago:', {
