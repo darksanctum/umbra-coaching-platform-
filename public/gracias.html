@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gracias por tu compra</title>
+    <title>Pago Exitoso - Umbra Training</title>
     <style>
         body {
-            background-color: #000;
+            background: linear-gradient(135deg, #000000, #CF2323);
             color: #fff;
-            font-family: sans-serif;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,16 +17,75 @@
         }
         .container {
             text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid #CF2323;
+            box-shadow: 0 0 30px rgba(207, 35, 35, 0.5);
+            max-width: 500px;
+            width: 90%;
         }
         h1 {
             color: #CF2323;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(207, 35, 35, 0.8);
+        }
+        .success-icon {
+            font-size: 4rem;
+            color: #00FF00;
+            margin-bottom: 20px;
+        }
+        .next-step {
+            background: linear-gradient(45deg, #CF2323, #FF4444);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .next-step:hover {
+            background: linear-gradient(45deg, #FF4444, #CF2323);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(207, 35, 35, 0.4);
+        }
+        .instructions {
+            margin: 20px 0;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        .telegram-icon {
+            color: #0088cc;
+            font-size: 1.5rem;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>¡Gracias por tu compra!</h1>
-        <p>En breve recibirás un correo con los siguientes pasos.</p>
+        <div class="success-icon">✅</div>
+        <h1>¡Pago Confirmado!</h1>
+        <p class="instructions">
+            Tu pago ha sido procesado exitosamente.<br>
+            <strong>Siguiente paso:</strong> Contactanos por Telegram para recibir tu formulario de evaluación inicial.
+        </p>
+        
+        <a href="https://t.me/kojicoachbot" target="_blank" class="next-step">
+            <span class="telegram-icon">📱</span>
+            Contactar por Telegram
+        </a>
+        
+        <p style="font-size: 0.9rem; color: #ccc; margin-top: 20px;">
+            Una vez que nos contactes, recibirás tu formulario de evaluación.<br>
+            Después de completarlo, tu programa personalizado estará listo entre 1 a 4 días.
+        </p>
     </div>
 </body>
 </html>
