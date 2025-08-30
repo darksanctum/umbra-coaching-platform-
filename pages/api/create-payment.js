@@ -56,8 +56,15 @@ export default async function handler(req, res) {
           number: req.body.payer.identification?.number || '12345678901234567890',
         },
       },
-      // URL de webhook corregida
+      // URL de webhook
       notification_url: `https://umbratraining.com/api/payment-webhook`,
+      // URLs de redirección después del pago
+      back_urls: {
+        success: "https://umbratraining.com/gracias.html",
+        failure: "https://umbratraining.com/pago-fallido.html",
+        pending: "https://umbratraining.com/pago-pendiente.html"
+      },
+      auto_return: "approved"
     };
 
     console.log('Datos del pago:', {
