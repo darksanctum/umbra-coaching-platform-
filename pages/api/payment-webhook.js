@@ -115,11 +115,32 @@ async function procesarPagoAprobado(payment) {
   };
 
   try {
-    // Notificar por email (ejemplo básico)
-    await enviarNotificacionEmail(clienteData);
-    
     // Notificar por Telegram (si tienes bot configurado)
     await enviarNotificacionTelegram(clienteData);
+    
+    // INTEGRACIÓN CON MAKE - Enviar datos para automatización completa
+    const makeWebhookUrl = "https://hook.us2.make.com/ui9ogao6usp81vgc9x1yewzfhc4y8uq5";
+    
+    console.log('📤 Enviando datos a Make para automatización...');
+    
+    const makeResponse = await fetch(makeWebhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tipo: 'nuevo_pago',
+        plan: payment.description,
+        email: payment.payer?.email,
+        monto: payment.transaction_amount,
+        payment_id: payment.id,
+        fecha_pago: new Date().toISOString()
+      })
+    });
+    
+    if (makeResponse.ok) {
+      console.log('✅ Datos enviados a Make exitosamente');
+    } else {
+      console.error('❌ Error enviando a Make:', await makeResponse.text());
+    }
     
     console.log('✅ Flujo de automatización completado');
   } catch (error) {
@@ -135,11 +156,6 @@ async function procesarPagoRechazado(payment) {
 // Función para procesar pagos pendientes
 async function procesarPagoPendiente(payment) {
   console.log('⏳ PAGO PENDIENTE - En espera de confirmación');
-}
-
-// Función básica para envio de email (requiere configuración de SMTP)
-async function enviarNotificacionEmail(clienteData) {
-  console.log('📧 Enviando notificación por email:', clienteData.email);
 }
 
 // Función básica para notificación Telegram
