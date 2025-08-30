@@ -25,23 +25,32 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Payment ID missing' });
     }
 
+    console.log('Payment ID recibido:', paymentId, 'Tipo:', typeof paymentId);
+
     // Si es una simulación, responder OK sin procesar
-    if (paymentId === "123456" || paymentId === 123456) {
+    if (paymentId === "123456" || paymentId === 123456 || String(paymentId) === "123456") {
       console.log('🧪 Simulación detectada - respondiendo OK');
       return res.status(200).json({ 
         received: true, 
         simulation: true,
+        payment_id: paymentId,
+        message: "Simulación procesada correctamente"
+      });
+    }
+
+    // Solo para pagos reales, verificar credenciales
+    const accessToken = process.env.MP_ACCESS_TOKEN;
+    if (!accessToken) {
+      console.error('MP_ACCESS_TOKEN no configurado');
+      return res.status(200).json({ 
+        received: true,
+        error: 'Server configuration error',
         payment_id: paymentId 
       });
     }
 
-    // Configurar cliente de Mercado Pago
-    const accessToken = process.env.MP_ACCESS_TOKEN;
-    if (!accessToken) {
-      console.error('MP_ACCESS_TOKEN no configurado');
-      return res.status(500).json({ error: 'Server configuration error' });
-    }
-
+    console.log('Procesando pago real con ID:', paymentId);
+    
     const client = new MercadoPagoConfig({ accessToken });
     const payment = new Payment(client);
 
@@ -82,20 +91,13 @@ export default async function handler(req, res) {
     console.error('Message:', error.message);
     console.error('Stack:', error.stack);
     
-    // Si es un error de autenticación, responder OK para que MP no reintente
-    if (error.message && error.message.includes('401')) {
-      console.log('Error 401 - Respondiendo OK para evitar reintentos');
-      return res.status(200).json({ 
-        received: true, 
-        error: 'Authentication error',
-        payment_id: req.body?.data?.id 
-      });
-    }
-    
-    // Responder OK para que MP no reintente indefinidamente
+    // SIEMPRE responder OK para evitar reintentos infinitos
+    console.log('Respondiendo OK para evitar reintentos');
     res.status(200).json({ 
-      error: 'Internal server error',
-      received: true 
+      received: true, 
+      error: 'Internal server error handled',
+      message: error.message,
+      payment_id: req.body?.data?.id 
     });
   }
 }
@@ -111,12 +113,6 @@ async function procesarPagoAprobado(payment) {
     paymentId: payment.id,
     fecha: new Date().toISOString()
   };
-
-  // Aquí conectarías con:
-  // 1. Google Forms (para registrar el cliente)
-  // 2. Zapier/Make (para automatización)
-  // 3. Email/Telegram (para notificaciones)
-  // 4. Base de datos (para tracking)
 
   try {
     // Notificar por email (ejemplo básico)
@@ -134,44 +130,22 @@ async function procesarPagoAprobado(payment) {
 // Función para procesar pagos rechazados
 async function procesarPagoRechazado(payment) {
   console.log('❌ PAGO RECHAZADO - Notificar para seguimiento');
-  
-  // Aquí podrías:
-  // - Enviar email de reintento
-  // - Notificar al equipo de ventas
-  // - Registrar para remarketing
 }
 
 // Función para procesar pagos pendientes
 async function procesarPagoPendiente(payment) {
   console.log('⏳ PAGO PENDIENTE - En espera de confirmación');
-  
-  // Aquí podrías:
-  // - Enviar instrucciones de pago
-  // - Programar recordatorios
-  // - Notificar al equipo
 }
 
 // Función básica para envio de email (requiere configuración de SMTP)
 async function enviarNotificacionEmail(clienteData) {
   console.log('📧 Enviando notificación por email:', clienteData.email);
-  
-  // Aquí integrarías con tu servicio de email preferido:
-  // - Nodemailer + Gmail/SMTP
-  // - SendGrid
-  // - Mailgun
-  // - Resend
-  
-  // Ejemplo básico (necesita configuración):
-  // const nodemailer = require('nodemailer');
-  // const transporter = nodemailer.createTransporter({ ... });
-  // await transporter.sendMail({ ... });
 }
 
 // Función básica para notificación Telegram
 async function enviarNotificacionTelegram(clienteData) {
   console.log('📱 Enviando notificación por Telegram');
   
-  // Aquí integrarías con tu bot de Telegram:
   const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;
   const telegramChatId = process.env.TELEGRAM_CHAT_ID;
   
