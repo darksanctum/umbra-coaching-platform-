@@ -6,6 +6,35 @@ const Dashboard = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [loginError, setLoginError] = useState('');
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dataLoading, setDataLoading] = useState(false);
+  const [dataError, setDataError] = useState(null);
+
+  // Función para cargar datos del dashboard
+  const fetchDashboardData = async () => {
+    setDataLoading(true);
+    setDataError(null);
+    
+    try {
+      const response = await fetch('/api/dashboard-metrics', {
+        headers: {
+          'Authorization': 'Bearer umbra_dashboard_2025'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al cargar datos del dashboard');
+      }
+      
+      const data = await response.json();
+      setDashboardData(data);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setDataError(error.message);
+    } finally {
+      setDataLoading(false);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('umbra_auth_token');
@@ -14,6 +43,17 @@ const Dashboard = () => {
     }
     setIsLoading(false);
   }, []);
+
+  // Cargar datos cuando se autentica
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchDashboardData();
+      
+      // Actualizar datos cada 5 minutos
+      const interval = setInterval(fetchDashboardData, 300000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -185,21 +225,67 @@ const Dashboard = () => {
               Umbra Command Center
             </h1>
             
-            <button
-              onClick={handleLogout}
-              style={{
-                background: 'rgba(207, 35, 35, 0.2)',
-                border: '1px solid #CF2323',
-                color: '#CF2323',
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{
+                color: '#06B6D4',
+                fontSize: '0.9rem',
                 padding: '0.5rem 1rem',
-                borderRadius: '10px',
-                cursor: 'pointer',
-                fontSize: '0.9rem'
-              }}
-            >
-              Cerrar Sesión
-            </button>
+                background: 'rgba(6, 182, 212, 0.1)',
+                borderRadius: '20px'
+              }}>
+                {dashboardData ? 
+                  `Actualizado: ${new Date(dashboardData.lastUpdated).toLocaleTimeString('es-MX')}` :
+                  'Cargando...'
+                }
+              </div>
+              
+              <button
+                onClick={fetchDashboardData}
+                disabled={dataLoading}
+                style={{
+                  background: dataLoading ? 'rgba(100, 100, 100, 0.2)' : 'rgba(6, 182, 212, 0.2)',
+                  border: '1px solid #06B6D4',
+                  color: '#06B6D4',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '10px',
+                  cursor: dataLoading ? 'not-allowed' : 'pointer',
+                  fontSize: '0.8rem'
+                }}
+              >
+                {dataLoading ? 'Actualizando...' : 'Actualizar'}
+              </button>
+              
+              <button
+                onClick={handleLogout}
+                style={{
+                  background: 'rgba(207, 35, 35, 0.2)',
+                  border: '1px solid #CF2323',
+                  color: '#CF2323',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                Cerrar Sesión
+              </button>
+            </div>
           </div>
+
+          {/* Error de carga */}
+          {dataError && (
+            <div style={{
+              background: 'rgba(207, 35, 35, 0.1)',
+              border: '1px solid #CF2323',
+              color: '#CF2323',
+              padding: '1rem',
+              borderRadius: '10px',
+              marginBottom: '2rem',
+              textAlign: 'center'
+            }}>
+              Error al cargar datos: {dataError}
+            </div>
+          )}
 
           {/* Métricas principales */}
           <div style={{
@@ -208,105 +294,34 @@ const Dashboard = () => {
             gap: '2rem',
             marginBottom: '3rem'
           }}>
-            <div style={{
-              background: 'rgba(17, 17, 17, 0.8)',
-              padding: '2rem',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <div style={{ color: '#A1A1AA', fontSize: '0.95rem', marginBottom: '1rem' }}>
-                INGRESOS DEL MES
-              </div>
-              <div style={{
-                fontSize: '3rem',
-                fontWeight: '900',
-                background: 'linear-gradient(135deg, #CF2323, #8B5CF6)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                marginBottom: '1rem'
-              }}>
-                $47,850
-              </div>
-              <div style={{ color: '#10B981', fontSize: '0.9rem' }}>
-                ↗ +23% vs mes anterior
-              </div>
-            </div>
-
-            <div style={{
-              background: 'rgba(17, 17, 17, 0.8)',
-              padding: '2rem',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <div style={{ color: '#A1A1AA', fontSize: '0.95rem', marginBottom: '1rem' }}>
-                CLIENTES ACTIVOS
-              </div>
-              <div style={{
-                fontSize: '3rem',
-                fontWeight: '900',
-                background: 'linear-gradient(135deg, #CF2323, #8B5CF6)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                marginBottom: '1rem'
-              }}>
-                89
-              </div>
-              <div style={{ color: '#10B981', fontSize: '0.9rem' }}>
-                ↗ +12 este mes
-              </div>
-            </div>
-
-            <div style={{
-              background: 'rgba(17, 17, 17, 0.8)',
-              padding: '2rem',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <div style={{ color: '#A1A1AA', fontSize: '0.95rem', marginBottom: '1rem' }}>
-                TASA DE CONVERSIÓN
-              </div>
-              <div style={{
-                fontSize: '3rem',
-                fontWeight: '900',
-                background: 'linear-gradient(135deg, #CF2323, #8B5CF6)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                marginBottom: '1rem'
-              }}>
-                8.4%
-              </div>
-              <div style={{ color: '#10B981', fontSize: '0.9rem' }}>
-                ↗ +1.2% esta semana
-              </div>
-            </div>
-
-            <div style={{
-              background: 'rgba(17, 17, 17, 0.8)',
-              padding: '2rem',
-              borderRadius: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <div style={{ color: '#A1A1AA', fontSize: '0.95rem', marginBottom: '1rem' }}>
-                RENOVACIONES
-              </div>
-              <div style={{
-                fontSize: '3rem',
-                fontWeight: '900',
-                background: 'linear-gradient(135deg, #CF2323, #8B5CF6)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                marginBottom: '1rem'
-              }}>
-                92%
-              </div>
-              <div style={{ color: '#10B981', fontSize: '0.9rem' }}>
-                ↗ +5% vs mes anterior
-              </div>
-            </div>
+            <MetricCard 
+              label="INGRESOS DEL MES"
+              value={dashboardData ? dashboardData.metrics.revenue.formatted : '$--,---'}
+              change={dashboardData ? `+${dashboardData.metrics.revenue.growth}% vs mes anterior` : 'Cargando...'}
+              positive={true}
+              loading={dataLoading}
+            />
+            <MetricCard 
+              label="CLIENTES ACTIVOS"
+              value={dashboardData ? dashboardData.metrics.clients.formatted : '--'}
+              change={dashboardData ? `+${dashboardData.metrics.clients.growth} este mes` : 'Cargando...'}
+              positive={true}
+              loading={dataLoading}
+            />
+            <MetricCard 
+              label="TASA DE CONVERSIÓN"
+              value={dashboardData ? dashboardData.metrics.conversion.formatted : '--%'}
+              change={dashboardData ? `+${dashboardData.metrics.conversion.growth}% esta semana` : 'Cargando...'}
+              positive={true}
+              loading={dataLoading}
+            />
+            <MetricCard 
+              label="RENOVACIONES"
+              value={dashboardData ? dashboardData.metrics.retention.formatted : '--%'}
+              change={dashboardData ? `+${dashboardData.metrics.retention.growth}% vs mes anterior` : 'Cargando...'}
+              positive={true}
+              loading={dataLoading}
+            />
           </div>
 
           {/* Sección de pagos recientes */}
@@ -326,35 +341,34 @@ const Dashboard = () => {
               Transacciones Recientes
             </h3>
             
-            <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', padding: '1rem 0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                  <strong>María González</strong><br />
-                  <span style={{ color: '#A1A1AA' }}>Hace 2 horas</span>
-                </div>
-                <div style={{ color: '#10B981', fontWeight: '700' }}>+$2,999</div>
+            {dataLoading ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#A1A1AA' }}>
+                Cargando transacciones...
               </div>
-            </div>
-
-            <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', padding: '1rem 0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                  <strong>Pedro Jiménez</strong><br />
-                  <span style={{ color: '#A1A1AA' }}>Hace 5 horas</span>
+            ) : dashboardData?.recentPayments ? (
+              dashboardData.recentPayments.map((payment, index) => (
+                <div key={payment.id} style={{ 
+                  borderBottom: index < dashboardData.recentPayments.length - 1 ? '1px solid rgba(255, 255, 255, 0.1)' : 'none', 
+                  padding: '1rem 0' 
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                      <strong>{payment.clientName}</strong><br />
+                      <span style={{ color: '#A1A1AA', fontSize: '0.9rem' }}>
+                        {payment.plan} • {payment.timeAgo}
+                      </span>
+                    </div>
+                    <div style={{ color: '#10B981', fontWeight: '700' }}>
+                      {payment.formattedAmount}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ color: '#10B981', fontWeight: '700' }}>+$1,199</div>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#A1A1AA' }}>
+                No hay transacciones recientes
               </div>
-            </div>
-
-            <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', padding: '1rem 0' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                  <strong>Sofia Castro</strong><br />
-                  <span style={{ color: '#A1A1AA' }}>Ayer</span>
-                </div>
-                <div style={{ color: '#10B981', fontWeight: '700' }}>+$4,299</div>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Alertas */}
@@ -373,14 +387,40 @@ const Dashboard = () => {
               Centro de Alertas
             </h3>
             
-            <div style={{
-              background: 'rgba(207, 35, 35, 0.1)',
-              borderLeft: '4px solid #CF2323',
-              padding: '1.5rem',
-              marginBottom: '1rem',
-              borderRadius: '0 15px 15px 0'
-            }}>
-              <strong>CRÍTICO: 5 clientes vencen en 3 días</strong><br />
+            {dataLoading ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#A1A1AA' }}>
+                Cargando alertas...
+              </div>
+            ) : dashboardData?.alerts ? (
+              dashboardData.alerts.map((alert, index) => {
+                const getAlertColor = (type) => {
+                  switch(type) {
+                    case 'critical': return { bg: 'rgba(207, 35, 35, 0.1)', border: '#CF2323' };
+                    case 'warning': return { bg: 'rgba(245, 158, 11, 0.1)', border: '#F59E0B' };
+                    default: return { bg: 'rgba(6, 182, 212, 0.1)', border: '#06B6D4' };
+                  }
+                };
+                const colors = getAlertColor(alert.type);
+                
+                return (
+                  <div key={index} style={{
+                    background: colors.bg,
+                    borderLeft: `4px solid ${colors.border}`,
+                    padding: '1.5rem',
+                    marginBottom: index < dashboardData.alerts.length - 1 ? '1rem' : '0',
+                    borderRadius: '0 15px 15px 0'
+                  }}>
+                    <strong>{alert.title}</strong><br />
+                    {alert.description}
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#A1A1AA' }}>
+                No hay alertas activas
+              </div>
+            )}
+          </div>CRÍTICO: 5 clientes vencen en 3 días</strong><br />
               Activar protocolo de renovación automática
             </div>
 
