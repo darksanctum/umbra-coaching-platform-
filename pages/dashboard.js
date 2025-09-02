@@ -82,7 +82,7 @@ const Dashboard = () => {
       setIsAuthenticated(true);
       fetchDashboardData(); // Cargar datos después del login
     } else {
-      setLoginError('Contraseña incorrecta');
+      setLoginError('Contraseña incorreta');
     }
   };
 
@@ -98,6 +98,10 @@ const Dashboard = () => {
       currency: 'MXN',
       minimumFractionDigits: 0
     }).format(amount);
+  };
+
+  const formatNumber = (num) => {
+    return new Intl.NumberFormat('es-MX').format(num);
   };
 
   const getDataSourceIcon = () => {
@@ -127,10 +131,21 @@ const Dashboard = () => {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        background: '#0a0a0a',
-        color: '#fff'
+        background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
+        color: '#e2e8f0'
       }}>
-        Inicializando sistema...
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '3px solid rgba(99, 102, 241, 0.3)',
+            borderTop: '3px solid #6366f1',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem'
+          }}></div>
+          <p>Inicializando sistema...</p>
+        </div>
       </div>
     );
   }
@@ -141,42 +156,48 @@ const Dashboard = () => {
         <Head>
           <title>Dashboard - Umbra Coaching</title>
           <meta name="robots" content="noindex,nofollow" />
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
         </Head>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           height: '100vh',
-          background: 'linear-gradient(135deg, #000000, #0a0a0a)',
-          fontFamily: "'Space Mono', monospace"
+          background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
         }}>
           <form onSubmit={handleLogin} style={{
-            background: 'rgba(17, 17, 17, 0.9)',
+            background: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(20px)',
             padding: '3rem',
-            borderRadius: '12px',
-            border: '1px solid #CF2323',
-            boxShadow: '0 0 30px rgba(207, 35, 35, 0.3)',
+            borderRadius: '24px',
+            border: '1px solid rgba(99, 102, 241, 0.2)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
             minWidth: '400px'
           }}>
             <h1 style={{
-              color: '#CF2323',
+              color: '#e2e8f0',
               textAlign: 'center',
               marginBottom: '2rem',
               fontSize: '1.8rem',
-              textTransform: 'uppercase',
-              letterSpacing: '2px'
+              fontWeight: '600',
+              letterSpacing: '-0.02em'
             }}>
-              Acceso Restringido
+              Acceso al Dashboard
             </h1>
             
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{
                 display: 'block',
-                color: '#E5E7EB',
+                color: '#94a3b8',
                 marginBottom: '0.5rem',
                 fontSize: '0.9rem',
-                textTransform: 'uppercase',
-                letterSpacing: '1px'
+                fontWeight: '500'
               }}>
                 Código de Acceso
               </label>
@@ -187,26 +208,31 @@ const Dashboard = () => {
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  background: 'rgba(0, 0, 0, 0.7)',
-                  border: '1px solid #333',
-                  borderRadius: '6px',
-                  color: '#fff',
-                  fontSize: '1rem'
+                  background: 'rgba(30, 41, 59, 0.5)',
+                  border: '1px solid rgba(99, 102, 241, 0.2)',
+                  borderRadius: '12px',
+                  color: '#e2e8f0',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'all 0.2s ease'
                 }}
                 placeholder="Ingresa el código"
                 required
+                onFocus={(e) => e.target.style.borderColor = '#6366f1'}
+                onBlur={(e) => e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)'}
               />
             </div>
             
             {loginError && (
               <div style={{
-                color: '#CF2323',
-                background: 'rgba(207, 35, 35, 0.1)',
+                color: '#ef4444',
+                background: 'rgba(239, 68, 68, 0.1)',
                 padding: '12px',
-                borderRadius: '6px',
+                borderRadius: '12px',
                 marginBottom: '1rem',
                 textAlign: 'center',
-                border: '1px solid rgba(207, 35, 35, 0.3)'
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                fontSize: '0.9rem'
               }}>
                 {loginError}
               </div>
@@ -215,17 +241,17 @@ const Dashboard = () => {
             <button type="submit" style={{
               width: '100%',
               padding: '12px',
-              background: 'linear-gradient(45deg, #CF2323, #8b0000)',
+              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: '12px',
               color: '#fff',
               fontSize: '1rem',
               cursor: 'pointer',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              fontWeight: 'bold'
+              fontWeight: '600',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.3)'
             }}>
-              Acceder al Santuario
+              Acceder
             </button>
           </form>
         </div>
@@ -236,440 +262,520 @@ const Dashboard = () => {
   return (
     <>
       <Head>
-        <title>Dashboard Umbra - Control Central</title>
+        <title>Dashboard - Umbra Coaching</title>
         <meta name="robots" content="noindex,nofollow" />
-        <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          .metric-card {
+            transition: all 0.2s ease;
+          }
+          .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+          }
+          .stat-trend-up {
+            color: #10b981;
+          }
+          .stat-trend-down {
+            color: #ef4444;
+          }
+        `}</style>
       </Head>
       
       <div style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #000000, #0a0a0a, #111111)',
-        color: '#E5E7EB',
-        fontFamily: "'Space Mono', monospace",
-        padding: '2rem'
+        background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
+        color: '#e2e8f0',
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
       }}>
-        {/* Indicador de carga */}
-        {dataLoading && (
-          <div style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            background: 'rgba(207, 35, 35, 0.9)',
-            padding: '12px 20px',
-            borderRadius: '6px',
-            zIndex: 1000,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)'
-          }}>
-            🔄 Actualizando datos...
+        {/* Sidebar */}
+        <div style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          width: '280px',
+          height: '100vh',
+          background: 'rgba(15, 23, 42, 0.8)',
+          backdropFilter: 'blur(20px)',
+          borderRight: '1px solid rgba(99, 102, 241, 0.1)',
+          padding: '2rem 0',
+          zIndex: 1000
+        }}>
+          {/* Logo */}
+          <div style={{ padding: '0 2rem', marginBottom: '3rem' }}>
+            <h1 style={{
+              color: '#e2e8f0',
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              letterSpacing: '-0.02em',
+              margin: 0
+            }}>
+              Umbra UI
+            </h1>
           </div>
-        )}
 
-        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-          {/* Header */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '3rem',
-            padding: '2rem',
-            background: 'rgba(17, 17, 17, 0.8)',
-            borderRadius: '12px',
-            border: '1px solid #333'
-          }}>
-            <div>
-              <h1 style={{
-                fontSize: '2.5rem',
-                fontFamily: "'Russo One', sans-serif",
-                color: '#CF2323',
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-                margin: 0
+          {/* Navigation */}
+          <nav>
+            <div style={{ padding: '0 2rem', marginBottom: '2rem' }}>
+              <div style={{
+                padding: '12px 16px',
+                background: 'rgba(99, 102, 241, 0.1)',
+                borderRadius: '12px',
+                color: '#6366f1',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
               }}>
-                UMBRA CONTROL
-              </h1>
-              <p style={{
-                color: '#A1A1AA',
-                margin: '0.5rem 0 0 0',
-                fontSize: '1rem'
-              }}>
-                {getDataSourceIcon()} {getDataSourceText()} - {new Date().toLocaleDateString('es-MX')}
-              </p>
-              {lastUpdated && (
-                <p style={{
-                  color: '#6b7280',
-                  margin: '0.25rem 0 0 0',
-                  fontSize: '0.8rem'
-                }}>
-                  Última actualización: {lastUpdated}
-                </p>
-              )}
+                📊 Dashboard
+              </div>
             </div>
-            
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <button 
-                onClick={fetchDashboardData}
-                disabled={dataLoading}
-                style={{
-                  padding: '10px 20px',
-                  background: dataLoading ? '#666' : 'linear-gradient(45deg, #CF2323, #8b0000)',
-                  border: 'none',
-                  borderRadius: '6px',
-                  color: '#fff',
-                  cursor: dataLoading ? 'not-allowed' : 'pointer',
-                  fontSize: '0.9rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}
-              >
-                {dataLoading ? 'Actualizando...' : '🔄 Actualizar'}
-              </button>
+
+            <div style={{ padding: '0 2rem' }}>
+              <p style={{
+                color: '#64748b',
+                fontSize: '0.8rem',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                margin: '0 0 1rem 0'
+              }}>
+                Management
+              </p>
               
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px'
+              }}>
+                {[
+                  { icon: '👥', label: 'Clientes' },
+                  { icon: '💳', label: 'Pagos' },
+                  { icon: '📈', label: 'Analytics' },
+                  { icon: '⚙️', label: 'Configuración' }
+                ].map((item, index) => (
+                  <div key={index} style={{
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    color: '#94a3b8',
+                    fontSize: '0.9rem',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'rgba(99, 102, 241, 0.05)';
+                    e.target.style.color = '#e2e8f0';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'transparent';
+                    e.target.style.color = '#94a3b8';
+                  }}>
+                    {item.icon} {item.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Logout Button */}
+            <div style={{
+              position: 'absolute',
+              bottom: '2rem',
+              left: '2rem',
+              right: '2rem'
+            }}>
               <button 
                 onClick={handleLogout}
                 style={{
-                  padding: '10px 20px',
-                  background: 'transparent',
-                  border: '1px solid #CF2323',
-                  borderRadius: '6px',
-                  color: '#CF2323',
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                  borderRadius: '12px',
+                  color: '#ef4444',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
                 }}
               >
-                Cerrar Sesión
+                🚪 Cerrar Sesión
               </button>
             </div>
           </div>
 
-          {/* Error o warning */}
-          {dataError && (
+          {/* Main Content */}
+          <div style={{
+            marginLeft: '280px',
+            padding: '2rem 3rem'
+          }}>
+            {/* Header */}
             <div style={{
-              background: dataError.includes('⚠️') ? 'rgba(245, 158, 11, 0.1)' : 'rgba(207, 35, 35, 0.1)',
-              border: `1px solid ${dataError.includes('⚠️') ? 'rgba(245, 158, 11, 0.3)' : 'rgba(207, 35, 35, 0.3)'}`,
-              borderRadius: '8px',
-              padding: '1rem',
-              marginBottom: '2rem',
-              color: dataError.includes('⚠️') ? '#f59e0b' : '#CF2323'
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '3rem'
             }}>
-              {dataError}
-            </div>
-          )}
-
-          {/* Métricas principales */}
-          {dashboardData && (
-            <>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '2rem',
-                marginBottom: '3rem'
-              }}>
-                <div style={{
-                  background: 'rgba(17, 17, 17, 0.8)',
-                  padding: '2rem',
-                  borderRadius: '12px',
-                  border: '1px solid #333',
-                  position: 'relative',
-                  overflow: 'hidden'
+              <div>
+                <h1 style={{
+                  fontSize: '2rem',
+                  fontWeight: '700',
+                  letterSpacing: '-0.02em',
+                  margin: '0 0 0.5rem 0',
+                  color: '#e2e8f0'
                 }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    width: '60px',
-                    height: '60px',
-                    background: 'linear-gradient(45deg, #CF2323, transparent)',
-                    borderRadius: '0 12px 0 100%',
-                    opacity: 0.3
-                  }}></div>
-                  <h3 style={{
-                    color: '#A1A1AA',
-                    fontSize: '0.9rem',
-                    textTransform: 'uppercase',
-                    marginBottom: '1rem',
-                    fontWeight: 'normal'
-                  }}>
-                    💰 Ingresos Totales
-                  </h3>
-                  <p style={{
-                    fontSize: '2.5rem',
-                    fontWeight: 'bold',
-                    color: '#CF2323',
-                    margin: 0,
-                    fontFamily: "'Russo One', sans-serif"
-                  }}>
-                    {formatCurrency(dashboardData.totalRevenue)}
-                  </p>
-                  <p style={{
-                    color: '#A1A1AA',
-                    fontSize: '0.8rem',
-                    marginTop: '0.5rem'
-                  }}>
-                    {dashboardData.dataSource === 'mercadopago' ? 'Últimos 30 días' : 'Datos simulados'}
-                  </p>
-                </div>
-
-                <div style={{
-                  background: 'rgba(17, 17, 17, 0.8)',
-                  padding: '2rem',
-                  borderRadius: '12px',
-                  border: '1px solid #333',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  Dashboard
+                </h1>
+                <p style={{
+                  color: '#64748b',
+                  margin: 0,
+                  fontSize: '1rem'
                 }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    width: '60px',
-                    height: '60px',
-                    background: 'linear-gradient(45deg, #CF2323, transparent)',
-                    borderRadius: '0 12px 0 100%',
-                    opacity: 0.3
-                  }}></div>
-                  <h3 style={{
-                    color: '#A1A1AA',
-                    fontSize: '0.9rem',
-                    textTransform: 'uppercase',
-                    marginBottom: '1rem',
-                    fontWeight: 'normal'
-                  }}>
-                    👥 Clientes Activos
-                  </h3>
+                  {getDataSourceIcon()} {getDataSourceText()}
+                </p>
+                {lastUpdated && (
                   <p style={{
-                    fontSize: '2.5rem',
-                    fontWeight: 'bold',
-                    color: '#CF2323',
-                    margin: 0,
-                    fontFamily: "'Russo One', sans-serif"
+                    color: '#475569',
+                    margin: '0.25rem 0 0 0',
+                    fontSize: '0.8rem'
                   }}>
-                    {dashboardData.activeClients}
+                    Última actualización: {lastUpdated}
                   </p>
-                  <p style={{
-                    color: '#A1A1AA',
-                    fontSize: '0.8rem',
-                    marginTop: '0.5rem'
-                  }}>
-                    Pagos aprobados
-                  </p>
-                </div>
-
-                <div style={{
-                  background: 'rgba(17, 17, 17, 0.8)',
-                  padding: '2rem',
-                  borderRadius: '12px',
-                  border: '1px solid #333',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    width: '60px',
-                    height: '60px',
-                    background: 'linear-gradient(45deg, #CF2323, transparent)',
-                    borderRadius: '0 12px 0 100%',
-                    opacity: 0.3
-                  }}></div>
-                  <h3 style={{
-                    color: '#A1A1AA',
-                    fontSize: '0.9rem',
-                    textTransform: 'uppercase',
-                    marginBottom: '1rem',
-                    fontWeight: 'normal'
-                  }}>
-                    ⏳ Pagos Pendientes
-                  </h3>
-                  <p style={{
-                    fontSize: '2.5rem',
-                    fontWeight: 'bold',
-                    color: '#CF2323',
-                    margin: 0,
-                    fontFamily: "'Russo One', sans-serif"
-                  }}>
-                    {dashboardData.pendingPayments}
-                  </p>
-                  <p style={{
-                    color: '#A1A1AA',
-                    fontSize: '0.8rem',
-                    marginTop: '0.5rem'
-                  }}>
-                    Requieren seguimiento
-                  </p>
-                </div>
-
-                <div style={{
-                  background: 'rgba(17, 17, 17, 0.8)',
-                  padding: '2rem',
-                  borderRadius: '12px',
-                  border: '1px solid #333',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    width: '60px',
-                    height: '60px',
-                    background: 'linear-gradient(45deg, #CF2323, transparent)',
-                    borderRadius: '0 12px 0 100%',
-                    opacity: 0.3
-                  }}></div>
-                  <h3 style={{
-                    color: '#A1A1AA',
-                    fontSize: '0.9rem',
-                    textTransform: 'uppercase',
-                    marginBottom: '1rem',
-                    fontWeight: 'normal'
-                  }}>
-                    📈 Tasa de Conversión
-                  </h3>
-                  <p style={{
-                    fontSize: '2.5rem',
-                    fontWeight: 'bold',
-                    color: '#CF2323',
-                    margin: 0,
-                    fontFamily: "'Russo One', sans-serif"
-                  }}>
-                    {dashboardData.conversionRate}%
-                  </p>
-                  <p style={{
-                    color: '#A1A1AA',
-                    fontSize: '0.8rem',
-                    marginTop: '0.5rem'
-                  }}>
-                    Visitantes a clientes
-                  </p>
-                </div>
+                )}
               </div>
+              
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <button 
+                  onClick={fetchDashboardData}
+                  disabled={dataLoading}
+                  style={{
+                    padding: '10px 20px',
+                    background: dataLoading ? 'rgba(99, 102, 241, 0.3)' : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    cursor: dataLoading ? 'not-allowed' : 'pointer',
+                    fontSize: '0.9rem',
+                    fontWeight: '500',
+                    boxShadow: dataLoading ? 'none' : '0 4px 14px 0 rgba(99, 102, 241, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  {dataLoading ? (
+                    <div style={{
+                      width: '16px',
+                      height: '16px',
+                      border: '2px solid rgba(255, 255, 255, 0.3)',
+                      borderTop: '2px solid #fff',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }}></div>
+                  ) : '🔄'}
+                  {dataLoading ? 'Actualizando...' : 'Actualizar'}
+                </button>
+              </div>
+            </div>
 
-              {/* Transacciones recientes */}
+            {/* Error o warning */}
+            {dataError && (
               <div style={{
-                background: 'rgba(17, 17, 17, 0.8)',
-                padding: '2rem',
-                borderRadius: '12px',
-                border: '1px solid #333',
-                marginBottom: '2rem'
+                background: dataError.includes('⚠️') ? 'rgba(245, 158, 11, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                border: `1px solid ${dataError.includes('⚠️') ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                borderRadius: '16px',
+                padding: '1rem',
+                marginBottom: '2rem',
+                color: dataError.includes('⚠️') ? '#f59e0b' : '#ef4444'
               }}>
-                <h2 style={{
-                  color: '#CF2323',
-                  fontSize: '1.3rem',
-                  marginBottom: '1.5rem',
-                  textTransform: 'uppercase',
-                  fontFamily: "'Russo One', sans-serif"
+                {dataError}
+              </div>
+            )}
+
+            {/* Métricas principales */}
+            {dashboardData && (
+              <>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                  gap: '1.5rem',
+                  marginBottom: '3rem'
                 }}>
-                  💳 Transacciones Recientes
-                </h2>
-                
-                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  {dashboardData.recentPayments && dashboardData.recentPayments.length > 0 ? (
-                    dashboardData.recentPayments.map((payment, index) => (
-                      <div key={payment.id || index} style={{
+                  {[
+                    {
+                      title: 'Revenue',
+                      value: formatCurrency(dashboardData.totalRevenue),
+                      change: '+12.5%',
+                      trend: 'up',
+                      icon: '💰'
+                    },
+                    {
+                      title: 'Visitors',
+                      value: formatNumber(dashboardData.activeClients * 50),
+                      change: '+8.3%',
+                      trend: 'up',
+                      icon: '👥'
+                    },
+                    {
+                      title: 'Conversion',
+                      value: `${dashboardData.conversionRate}%`,
+                      change: '-1.8%',
+                      trend: 'down',
+                      icon: '📈'
+                    },
+                    {
+                      title: 'Session',
+                      value: '4m 32s',
+                      change: '+10.3%',
+                      trend: 'up',
+                      icon: '⏱️'
+                    }
+                  ].map((metric, index) => (
+                    <div key={index} className="metric-card" style={{
+                      background: 'rgba(15, 23, 42, 0.6)',
+                      backdropFilter: 'blur(20px)',
+                      borderRadius: '20px',
+                      border: '1px solid rgba(99, 102, 241, 0.1)',
+                      padding: '1.5rem',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}>
+                      {/* Gradient overlay */}
+                      <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        right: 0,
+                        width: '100px',
+                        height: '100px',
+                        background: `linear-gradient(135deg, ${
+                          index === 0 ? 'rgba(99, 102, 241, 0.1)' :
+                          index === 1 ? 'rgba(16, 185, 129, 0.1)' :
+                          index === 2 ? 'rgba(245, 158, 11, 0.1)' :
+                          'rgba(139, 92, 246, 0.1)'
+                        }, transparent)`,
+                        borderRadius: '50%',
+                        transform: 'translate(30px, -30px)'
+                      }}></div>
+
+                      <div style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '1rem 0',
-                        borderBottom: index < dashboardData.recentPayments.length - 1 ? '1px solid #333' : 'none'
+                        alignItems: 'flex-start',
+                        marginBottom: '1rem'
                       }}>
                         <div>
                           <p style={{
-                            margin: 0,
-                            color: '#E5E7EB',
-                            fontSize: '1rem',
-                            fontWeight: 'bold'
-                          }}>
-                            {payment.client}
-                          </p>
-                          <p style={{
-                            margin: '0.2rem 0 0 0',
-                            color: '#A1A1AA',
-                            fontSize: '0.8rem'
-                          }}>
-                            {payment.plan} • {payment.date}
-                          </p>
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <p style={{
-                            margin: 0,
-                            color: '#CF2323',
-                            fontSize: '1.1rem',
-                            fontWeight: 'bold'
-                          }}>
-                            {formatCurrency(payment.amount)}
-                          </p>
-                          <span style={{
-                            fontSize: '0.7rem',
-                            padding: '2px 8px',
-                            borderRadius: '12px',
+                            color: '#64748b',
+                            fontSize: '0.8rem',
+                            fontWeight: '500',
                             textTransform: 'uppercase',
-                            backgroundColor: payment.status === 'approved' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                            color: payment.status === 'approved' ? '#22c55e' : '#f59e0b'
+                            letterSpacing: '0.05em',
+                            margin: 0
                           }}>
-                            {payment.status === 'approved' ? 'Aprobado' : payment.status === 'pending' ? 'Pendiente' : payment.status}
-                          </span>
+                            {metric.title}
+                          </p>
+                          <h3 style={{
+                            color: '#e2e8f0',
+                            fontSize: '1.8rem',
+                            fontWeight: '700',
+                            margin: '0.5rem 0 0 0',
+                            letterSpacing: '-0.02em'
+                          }}>
+                            {metric.value}
+                          </h3>
                         </div>
+                        <span style={{ fontSize: '1.5rem' }}>{metric.icon}</span>
                       </div>
-                    ))
-                  ) : (
-                    <div style={{
-                      textAlign: 'center',
-                      padding: '3rem',
-                      color: '#6b7280'
-                    }}>
-                      <p style={{ fontSize: '3rem', margin: '0 0 1rem 0' }}>📊</p>
-                      <p style={{ margin: 0 }}>
-                        {dashboardData.dataSource === 'mercadopago' 
-                          ? 'No hay transacciones en los últimos 30 días'
-                          : 'Sin datos de transacciones'
-                        }
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className={`stat-trend-${metric.trend}`} style={{
+                          fontSize: '0.8rem',
+                          fontWeight: '600'
+                        }}>
+                          {metric.trend === 'up' ? '↗' : '↘'} {metric.change}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Revenue Growth Chart */}
+                <div style={{
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  backdropFilter: 'blur(20px)',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(99, 102, 241, 0.1)',
+                  padding: '2rem',
+                  marginBottom: '2rem'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '2rem'
+                  }}>
+                    <div>
+                      <h2 style={{
+                        color: '#e2e8f0',
+                        fontSize: '1.3rem',
+                        fontWeight: '600',
+                        margin: 0
+                      }}>
+                        Revenue growth
+                      </h2>
+                      <p style={{
+                        color: '#64748b',
+                        fontSize: '0.9rem',
+                        margin: '0.25rem 0 0 0'
+                      }}>
+                        January 2025
                       </p>
                     </div>
-                  )}
+                    
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                          width: '12px',
+                          height: '12px',
+                          borderRadius: '50%',
+                          background: '#6366f1'
+                        }}></div>
+                        <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Current period</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                          width: '12px',
+                          height: '12px',
+                          borderRadius: '50%',
+                          background: '#64748b'
+                        }}></div>
+                        <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Previous period</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fake Chart Area */}
+                  <div style={{
+                    height: '200px',
+                    background: 'linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%)',
+                    borderRadius: '12px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {/* Chart placeholder */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: '60%',
+                      background: 'linear-gradient(45deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2))',
+                      borderRadius: '12px 12px 0 0',
+                      clipPath: 'polygon(0% 100%, 15% 85%, 25% 90%, 40% 70%, 55% 80%, 70% 60%, 85% 75%, 100% 50%, 100% 100%)'
+                    }}></div>
+                    
+                    <p style={{
+                      color: '#64748b',
+                      fontSize: '0.9rem',
+                      textAlign: 'center',
+                      zIndex: 1
+                    }}>
+                      📊 Gráfico de crecimiento de ingresos
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
 
-          {/* Estado sin datos */}
-          {!dashboardData && !dataLoading && (
-            <div style={{
-              textAlign: 'center',
-              padding: '4rem',
-              background: 'rgba(17, 17, 17, 0.8)',
-              borderRadius: '12px',
-              border: '1px solid #333'
-            }}>
-              <p style={{ fontSize: '4rem', margin: '0 0 1rem 0' }}>📊</p>
-              <h2 style={{ color: '#CF2323', marginBottom: '1rem' }}>Dashboard Sin Datos</h2>
-              <p style={{ color: '#A1A1AA', marginBottom: '2rem' }}>
-                Haz clic en "Actualizar" para cargar las métricas
-              </p>
-              <button 
-                onClick={fetchDashboardData}
-                style={{
-                  padding: '12px 24px',
-                  background: 'linear-gradient(45deg, #CF2323, #8b0000)',
-                  border: 'none',
-                  borderRadius: '6px',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}
-              >
-                🔄 Cargar Datos
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default Dashboard;
+                {/* Transacciones recientes */}
+                <div style={{
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  backdropFilter: 'blur(20px)',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(99, 102, 241, 0.1)',
+                  padding: '2rem'
+                }}>
+                  <h2 style={{
+                    color: '#e2e8f0',
+                    fontSize: '1.3rem',
+                    fontWeight: '600',
+                    marginBottom: '1.5rem'
+                  }}>
+                    Transacciones Recientes
+                  </h2>
+                  
+                  <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    {dashboardData.recentPayments && dashboardData.recentPayments.length > 0 ? (
+                      dashboardData.recentPayments.map((payment, index) => (
+                        <div key={payment.id || index} style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '1rem 0',
+                          borderBottom: index < dashboardData.recentPayments.length - 1 ? '1px solid rgba(99, 102, 241, 0.1)' : 'none'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{
+                              width: '40px',
+                              height: '40px',
+                              borderRadius: '12px',
+                              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '1.2rem'
+                            }}>
+                              💳
+                            </div>
+                            <div>
+                              <p style={{
+                                margin: 0,
+                                color: '#e2e8f0',
+                                fontSize: '1rem',
+                                fontWeight: '500'
+                              }}>
+                                {payment.client}
+                              </p>
+                              <p style={{
+                                margin: '0.2rem 0 0 0',
+                                color: '#64748b',
+                                fontSize: '0.8rem'
+                              }}>
+                                {payment.plan} • {payment.date}
+                              </p>
+                            </div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <p style={{
+                              margin: 0,
+                              color: '#e2e8f0',
+                              fontSize: '1rem',
+                              fontWeight: '600'
+                            }}>
+                              {formatCurrency(payment.amount)}
+                            </p>
+                            <span style={{
+                              fontSize: '0.7rem',
+                              padding: '4px 8px',
+                              borderRadius: '8px',
+                              backgroundColor: payment.status === 'approved' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
+                              color: payment.status === 'approved' ? '#10b981' : '#f59e0b',
+                              fontWeight: '500'
+                            }}>
+                              {payment.status === 'approved' ? 'Aprobado' : payment.status === 'pending' ? 'Pendiente' : payment.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))
