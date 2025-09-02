@@ -21,31 +21,12 @@ body {
     color: var(--color-soul);
     font-family: var(--font-scripture);
     overflow-x: hidden;
-    cursor: none;
+    /* CURSOR NORMAL - Sin animaciones */
+    cursor: default;
 }
 
-/* --- Cursor Personalizado --- */
-.cursor-dot, .cursor-outline {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    border-radius: 50%;
-    z-index: 9999;
-    mix-blend-mode: difference;
-}
-.cursor-dot {
-    width: 8px;
-    height: 8px;
-    background-color: var(--color-ember);
-}
-.cursor-outline {
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--color-ember);
-    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
-}
-body:hover .cursor-outline { opacity: 1; }
+/* ELIMINADAS - Todas las animaciones de cursor personalizadas */
+/* .cursor-dot, .cursor-outline eliminadas completamente */
 
 /* --- Fondo Animado --- */
 #particle-canvas {
