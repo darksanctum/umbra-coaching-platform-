@@ -222,10 +222,56 @@ const PaymentModal = ({ plan, onClose }) => {
       backdropFilter: 'blur(5px)'
     }}>
       <div style={{
-        background: 'linear-gradient(135deg, #fff, #f8f9fa)',
+        background: 'white',
         padding: '2rem',
-        borderRadius: '16px',
+        borderRadius: '12px',
         maxWidth: '500px',
         width: '90%',
         maxHeight: '90vh',
-        overflow:
+        overflow: 'auto',
+        position: 'relative',
+      }}>
+        <button 
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            right: '1rem',
+            background: 'none',
+            border: 'none',
+            fontSize: '1.5rem',
+            cursor: 'pointer',
+          }}
+        >
+          &times;
+        </button>
+        
+        <h2>Completa tu pago</h2>
+        <h3>{plan.title}</h3>
+        <p>${plan.price} MXN</p>
+        
+        {error && (
+          <div style={{
+            color: 'red',
+            background: '#ffebee',
+            padding: '12px',
+            borderRadius: '6px',
+            marginBottom: '16px',
+          }}>
+            {error}
+          </div>
+        )}
+        
+        {isLoading && !error && (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <p>Cargando formulario de pago...</p>
+          </div>
+        )}
+        
+        <div id="cardPaymentBrick_container"></div>
+      </div>
+    </div>
+  );
+};
+
+export default PaymentModal;
