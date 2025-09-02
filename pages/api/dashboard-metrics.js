@@ -16,28 +16,29 @@ export default async function handler(req, res) {
     const accessToken = process.env.MP_ACCESS_TOKEN;
     
     if (accessToken) {
-      // Intentar obtener datos reales de Mercado Pago
+      // Obtener datos reales de Mercado Pago
       const client = new MercadoPagoConfig({ accessToken });
       const payment = new Payment(client);
       
       try {
-        // Obtener pagos recientes (últimos 30 días)
+        // Obtener pagos de los últimos 30 días
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         
-        // Nota: La API de MP puede requerir parámetros específicos
-        // Esto es un ejemplo básico - ajustar según la documentación oficial
-        const recentPayments = await payment.search({
+        // Búsqueda con criterios específicos
+        const searchResult = await payment.search({
           options: {
+            sort: 'date_created',
             criteria: 'desc',
             range: 'date_created',
             begin_date: thirtyDaysAgo.toISOString(),
-            end_date: new Date().toISOString()
+            end_date: new Date().toISOString(),
+            limit: 50
           }
         });
 
         // Procesar datos reales
-        const processedPayments = recentPayments.results?.slice(0, 10).map(p => ({
+        const recentPayments = searchResult.results?.slice(0, 10).map(p => ({
           id: p.id,
           client: p.payer?.email?.split('@')[0] || 'Cliente',
           amount: p.transaction_amount,
@@ -46,31 +47,31 @@ export default async function handler(req, res) {
           status: p.status
         })) || [];
 
-        const totalRevenue = recentPayments.results?.reduce((sum, p) => 
-          p.status === 'approved' ? sum + p.transaction_amount : sum, 0) || 0;
+        // Calcular métricas
+        const approvedPayments = searchResult.results?.filter(p => p.status === 'approved') || [];
+        const totalRevenue = approvedPayments.reduce((sum, p) => sum + p.transaction_amount, 0);
+        const activeClients = approvedPayments.length;
+        const pendingPayments = searchResult.results?.filter(p => p.status === 'pending').length || 0;
 
-        const activeClients = recentPayments.results?.filter(p => p.status === 'approved').length || 0;
-        const pendingPayments = recentPayments.results?.filter(p => p.status === 'pending').length || 0;
+        // Calcular ingresos por mes (últimos 4 meses)
+        const monthlyRevenue = calculateMonthlyRevenue(searchResult.results || []);
+        const clientDistribution = calculateClientDistribution(recentPayments);
 
         return res.status(200).json({
           totalRevenue,
           activeClients,
           pendingPayments,
-          conversionRate: 23.5, // Este dato requeriría integración con analytics
-          recentPayments: processedPayments,
-          monthlyRevenue: [
-            { month: 'Oct', amount: Math.floor(totalRevenue * 0.6) },
-            { month: 'Nov', amount: Math.floor(totalRevenue * 0.8) },
-            { month: 'Dic', amount: Math.floor(totalRevenue * 0.9) },
-            { month: 'Ene', amount: totalRevenue }
-          ],
-          clientDistribution: calculateClientDistribution(processedPayments),
-          lastUpdated: new Date().toISOString()
+          conversionRate: 23.5, // Este requiere integración con Google Analytics
+          recentPayments,
+          monthlyRevenue,
+          clientDistribution,
+          lastUpdated: new Date().toISOString(),
+          dataSource: 'mercadopago'
         });
 
       } catch (mpError) {
-        console.warn('Error connecting to MercadoPago:', mpError.message);
-        // Fallback a datos de demostración si falla MP
+        console.warn('Error conectando con MercadoPago:', mpError.message);
+        // Si falla MP, usar datos demo pero avisar
       }
     }
 
@@ -82,7 +83,7 @@ export default async function handler(req, res) {
       conversionRate: 23.5,
       recentPayments: [
         { 
-          id: 1, 
+          id: Date.now(), 
           client: 'Carlos M.', 
           amount: 2999, 
           plan: 'Transformación Acelerada', 
@@ -90,7 +91,7 @@ export default async function handler(req, res) {
           status: 'approved' 
         },
         { 
-          id: 2, 
+          id: Date.now() + 1, 
           client: 'Ana L.', 
           amount: 1199, 
           plan: 'Coaching Mensual', 
@@ -98,27 +99,11 @@ export default async function handler(req, res) {
           status: 'approved' 
         },
         { 
-          id: 3, 
+          id: Date.now() + 2, 
           client: 'Miguel R.', 
           amount: 4299, 
           plan: 'Metamorfosis Completa', 
           date: new Date(Date.now() - 172800000).toLocaleDateString('es-MX'), 
-          status: 'approved' 
-        },
-        { 
-          id: 4, 
-          client: 'Sofia T.', 
-          amount: 1199, 
-          plan: 'Coaching Mensual', 
-          date: new Date(Date.now() - 259200000).toLocaleDateString('es-MX'), 
-          status: 'pending' 
-        },
-        { 
-          id: 5, 
-          client: 'Diego P.', 
-          amount: 2999, 
-          plan: 'Transformación Acelerada', 
-          date: new Date(Date.now() - 345600000).toLocaleDateString('es-MX'), 
           status: 'approved' 
         }
       ],
@@ -134,18 +119,46 @@ export default async function handler(req, res) {
         { plan: 'Metamorfosis Completa', count: 7, percentage: 14.9 }
       ],
       lastUpdated: new Date().toISOString(),
-      isDemo: true
+      dataSource: 'demo',
+      warning: 'Datos de demostración - Configura MP_ACCESS_TOKEN para datos reales'
     };
 
     res.status(200).json(demoData);
 
   } catch (error) {
-    console.error('Error in dashboard metrics:', error);
+    console.error('Error en dashboard metrics:', error);
     res.status(500).json({ 
       error: 'Error interno del servidor',
       message: error.message 
     });
   }
+}
+
+function calculateMonthlyRevenue(payments) {
+  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const monthlyData = {};
+  
+  payments.forEach(payment => {
+    if (payment.status === 'approved') {
+      const date = new Date(payment.date_created);
+      const monthKey = months[date.getMonth()];
+      monthlyData[monthKey] = (monthlyData[monthKey] || 0) + payment.transaction_amount;
+    }
+  });
+
+  // Retornar últimos 4 meses
+  const currentMonth = new Date().getMonth();
+  const result = [];
+  for (let i = 3; i >= 0; i--) {
+    const monthIndex = (currentMonth - i + 12) % 12;
+    const monthName = months[monthIndex];
+    result.push({
+      month: monthName,
+      amount: monthlyData[monthName] || 0
+    });
+  }
+  
+  return result;
 }
 
 function calculateClientDistribution(payments) {
@@ -160,6 +173,6 @@ function calculateClientDistribution(payments) {
   return Object.entries(planCounts).map(([plan, count]) => ({
     plan,
     count,
-    percentage: total > 0 ? ((count / total) * 100).toFixed(1) : 0
+    percentage: total > 0 ? parseFloat(((count / total) * 100).toFixed(1)) : 0
   }));
 }
