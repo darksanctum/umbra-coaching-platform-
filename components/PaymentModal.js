@@ -5,18 +5,25 @@ const PaymentModal = ({ plan, onClose }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log('PaymentModal recibió plan:', plan);
+    
     if (!plan) {
       setError('No se recibió información del plan');
       setIsLoading(false);
       return;
     }
 
-    // Validar que el plan tenga precio
-    if (!plan.price || plan.price <= 0) {
-      setError(`Error: El plan "${plan.title}" no tiene un precio válido (${plan.price})`);
+    // Validar que el plan tenga precio - más flexible
+    const price = plan.price || plan.amount || 0;
+    if (!price || price <= 0) {
+      console.error('Error de precio:', { plan, price });
+      setError(`Error: El plan "${plan.title || 'Sin título'}" no tiene un precio válido (recibido: ${price})`);
       setIsLoading(false);
       return;
     }
+    
+    // Si llegamos aquí, todo está bien - limpiar error previo
+    setError(null);
 
     const publicKey = process.env.NEXT_PUBLIC_MP_PUBLIC_KEY;
     if (!publicKey) {
@@ -27,7 +34,7 @@ const PaymentModal = ({ plan, onClose }) => {
 
     console.log('Inicializando pago para:', {
       plan: plan.title,
-      price: plan.price,
+      price: price,
       publicKey: publicKey.substring(0, 20) + '...'
     });
 
@@ -63,7 +70,7 @@ const PaymentModal = ({ plan, onClose }) => {
         // Configuración del Brick con validaciones
         const brickConfig = {
           initialization: {
-            amount: Number(plan.price), // Asegurar que sea número
+            amount: Number(price), // Usar la variable price validada
           },
           customization: {
             paymentMethods: {
@@ -96,7 +103,7 @@ const PaymentModal = ({ plan, onClose }) => {
                   token: cardFormData.token,
                   issuer_id: cardFormData.issuer_id,
                   payment_method_id: cardFormData.payment_method_id,
-                  transaction_amount: Number(plan.price),
+                  transaction_amount: Number(price), // Usar price validado
                   installments: Number(cardFormData.installments) || 1,
                   description: `${plan.title} - Umbra Coaching`,
                   payer: {
@@ -301,7 +308,7 @@ const PaymentModal = ({ plan, onClose }) => {
             fontWeight: '700',
             margin: 0
           }}>
-            ${plan.price} MXN
+            ${plan.price || plan.amount} MXN
           </p>
         </div>
 
