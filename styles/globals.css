@@ -67,28 +67,6 @@ body {
     }
 }
 
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
 @keyframes scaleIn {
     from {
         opacity: 0;
@@ -138,16 +116,9 @@ body {
     }
 }
 
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
+@keyframes rotate { 
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); } 
 }
 
 /* === RESPONSIVE DESIGN === */
@@ -265,6 +236,30 @@ body:hover .cursor-outline {
     }
 }
 
+/* === BANNER DE PROMOCIÓN === */
+.promo-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, #CF2323, #8b0000);
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    animation: slideDown 0.5s ease-out;
+}
+
+@media (max-width: 768px) {
+    .promo-banner {
+        font-size: 13px;
+        padding: 8px;
+    }
+}
+
 /* === HEADER === */
 .header {
     padding: 20px 0;
@@ -274,6 +269,10 @@ body:hover .cursor-outline {
     z-index: 1000;
     transition: var(--transition-normal);
     backdrop-filter: blur(10px);
+}
+
+.header.with-banner {
+    padding-top: 50px;
 }
 
 .header.scrolled {
@@ -321,6 +320,10 @@ body:hover .cursor-outline {
     .header {
         padding: 15px 0;
         background: rgba(10, 10, 10, 0.95);
+    }
+    
+    .header.with-banner {
+        padding-top: 45px;
     }
     
     .logo {
@@ -371,6 +374,26 @@ body:hover .cursor-outline {
     }
 }
 
+/* === MENÚ HAMBURGUESA === */
+.hamburger-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.hamburger-line {
+    width: 20px;
+    height: 2px;
+    background: #CF2323;
+    transition: var(--transition-normal);
+}
+
+.hamburger-menu:hover .hamburger-line {
+    background: #ff4444;
+}
+
 /* === HERO SECTION === */
 .hero {
     min-height: 100vh;
@@ -397,6 +420,7 @@ body:hover .cursor-outline {
     color: var(--color-soul);
     margin-bottom: 24px;
     position: relative;
+    animation: fadeInUp 1s ease-out;
 }
 
 @media (max-width: 768px) {
@@ -487,6 +511,114 @@ body:hover .cursor-outline {
     }
 }
 
+/* === PROMOCIÓN HERO === */
+.promo-hero {
+    background: linear-gradient(135deg, rgba(207, 35, 35, 0.15), rgba(139, 0, 0, 0.15));
+    border: 2px solid #CF2323;
+    border-radius: 20px;
+    padding: 35px;
+    margin: 40px auto;
+    max-width: 550px;
+    text-align: center;
+    animation: fadeInUp 1s ease-out 0.4s both, pulse 3s infinite 2s;
+    backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+    .promo-hero {
+        padding: 25px;
+        margin: 30px auto;
+    }
+}
+
+.promo-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #CF2323;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(207, 35, 35, 0.3);
+}
+
+@media (max-width: 768px) {
+    .promo-title {
+        font-size: 1.3rem;
+    }
+}
+
+.promo-discount {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    background: linear-gradient(45deg, #CF2323, #ff4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@media (max-width: 768px) {
+    .promo-discount {
+        font-size: 2rem;
+    }
+}
+
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+@media (max-width: 768px) {
+    .countdown-container {
+        gap: 15px;
+    }
+}
+
+.countdown-item {
+    text-align: center;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    animation: pulse 2s infinite;
+}
+
+@media (max-width: 768px) {
+    .countdown-item {
+        padding: 8px;
+    }
+}
+
+.countdown-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #CF2323;
+}
+
+@media (max-width: 768px) {
+    .countdown-number {
+        font-size: 1.5rem;
+    }
+}
+
+.countdown-label {
+    font-size: 0.8rem;
+    color: #A1A1AA;
+}
+
+.promo-tip {
+    font-size: 1.1rem;
+    color: #E5E7EB;
+    font-family: var(--font-modern);
+}
+
+@media (max-width: 768px) {
+    .promo-tip {
+        font-size: 0.95rem;
+    }
+}
+
 /* === BOTONES === */
 .button {
     font-family: var(--font-sigil);
@@ -537,6 +669,13 @@ body:hover .cursor-outline {
     transform: translateY(-1px) scale(0.98);
 }
 
+.cta-button {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(45deg, #CF2323, #8b0000);
+    animation: fadeInUp 1s ease-out 0.6s both;
+}
+
 @media (max-width: 768px) {
     .button {
         padding: 14px 28px;
@@ -565,7 +704,7 @@ body:hover .cursor-outline {
     display: inline-block;
 }
 
-.section-title::after {
+.animated-title::after {
     content: '';
     position: absolute;
     bottom: -8px;
@@ -575,6 +714,11 @@ body:hover .cursor-outline {
     height: 3px;
     background: linear-gradient(45deg, var(--color-ember), #ff4444);
     border-radius: 2px;
+    transition: var(--transition-slow);
+}
+
+.animated-title:hover::after {
+    width: 100%;
 }
 
 .section-subtitle { 
@@ -635,7 +779,7 @@ body:hover .cursor-outline {
     animation: rotate 8s linear infinite;
 }
 
-.pricing-card:hover {
+.animated-card:hover {
     transform: translateY(-8px) scale(1.02);
     box-shadow: 
         0 20px 40px rgba(207, 35, 35, 0.15),
@@ -643,7 +787,7 @@ body:hover .cursor-outline {
     border-color: var(--color-ember);
 }
 
-.pricing-card:hover::before { 
+.animated-card:hover::before { 
     opacity: 0.8; 
 }
 
@@ -659,11 +803,6 @@ body:hover .cursor-outline {
     transition: var(--transition-normal);
 }
 
-@keyframes rotate { 
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); } 
-}
-
 @media (max-width: 768px) {
     .pricing-card {
         padding: 3px;
@@ -673,7 +812,7 @@ body:hover .cursor-outline {
         padding: 25px;
     }
     
-    .pricing-card:hover {
+    .animated-card:hover {
         transform: translateY(-5px) scale(1.01);
     }
     
@@ -709,12 +848,12 @@ body:hover .cursor-outline {
 }
 
 /* === PRECIOS MEJORADOS === */
-.pricing-card .price-container {
+.price-container {
     margin: 20px 0;
     text-align: center;
 }
 
-.pricing-card .price-with-discount .original-price {
+.original-price {
     font-size: 1.2rem;
     color: var(--color-smoke);
     text-decoration: line-through;
@@ -724,7 +863,7 @@ body:hover .cursor-outline {
     opacity: 0.7;
 }
 
-.pricing-card .final-price {
+.final-price {
     font-size: 3.5rem;
     font-weight: 800;
     margin-bottom: 5px;
@@ -734,18 +873,16 @@ body:hover .cursor-outline {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: none;
-    position: relative;
 }
 
-.pricing-card .price-normal .final-price {
+.price-normal .final-price {
     background: linear-gradient(45deg, var(--color-soul), var(--color-smoke));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
-.pricing-card .price-term { 
+.price-term { 
     color: var(--color-smoke); 
     font-size: 1rem;
     font-family: var(--font-modern);
@@ -754,11 +891,11 @@ body:hover .cursor-outline {
 }
 
 @media (max-width: 768px) {
-    .pricing-card .final-price {
+    .final-price {
         font-size: 2.8rem;
     }
     
-    .pricing-card .original-price {
+    .original-price {
         font-size: 1rem;
     }
 }
@@ -784,24 +921,6 @@ body:hover .cursor-outline {
 .pricing-card .features li:hover {
     color: var(--color-ember);
     transform: translateX(5px);
-}
-
-.pricing-card .features li::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--color-ember);
-    border-radius: 50%;
-    margin-right: 12px;
-    margin-top: 8px;
-    flex-shrink: 0;
-    transition: var(--transition-fast);
-}
-
-.pricing-card .features li:hover::before {
-    background: #ff4444;
-    transform: scale(1.3);
-    box-shadow: 0 0 10px var(--color-ember);
 }
 
 /* === BADGES === */
@@ -917,6 +1036,52 @@ body:hover .cursor-outline {
     box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
 }
 
+/* === DISCOUNT INFO === */
+.discount-info {
+    margin-top: 50px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(207, 35, 35, 0.1), rgba(139, 0, 0, 0.1));
+    border: 2px solid rgba(207, 35, 35, 0.3);
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 600px;
+    margin: 50px auto 0;
+    animation: fadeInUp 1s ease-out;
+}
+
+.discount-info-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #CF2323;
+}
+
+.discount-info-text {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.discount-code {
+    display: inline-block;
+    background: #CF2323;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    font-family: var(--font-modern);
+    letter-spacing: 1px;
+    margin: 10px 0;
+    animation: pulse 2s infinite;
+}
+
+.discount-info-sub {
+    font-size: 0.95rem;
+    color: #A1A1AA;
+    margin-top: 10px;
+}
+
 /* === FOOTER === */
 .footer { 
     padding: 60px 0; 
@@ -979,21 +1144,6 @@ body:hover .cursor-outline {
 
 .footer a:hover::after {
     width: 100%;
-}
-
-/* === UTILIDADES === */
-.text-glow {
-    text-shadow: 0 0 10px var(--color-ember);
-}
-
-.box-glow {
-    box-shadow: 0 0 20px rgba(207, 35, 35, 0.3);
-}
-
-.shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
 }
 
 /* === SCROLLBAR === */
