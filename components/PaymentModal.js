@@ -263,10 +263,11 @@ const PaymentModal = ({ plan, onClose }) => {
     setCouponError('');
     setFinalPrice(originalPrice);
     
-    // Actualizar Brick con precio original
-    if (window.updateBrickAmount) {
-      window.updateBrickAmount(originalPrice);
-    }
+    // Forzar recreación del modal
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   };
 
   if (!plan) return null;
