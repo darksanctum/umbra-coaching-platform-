@@ -7,45 +7,56 @@ export default async function handler(req, res) {
   try {
     const { code, originalPrice, planName } = req.body;
 
-    // Cupones disponibles
+    // CUPONES CORREGIDOS - El descuento coincide exactamente con lo mostrado
     const coupons = {
       'BIENVENIDO50': {
         type: 'percentage',
-        value: 50,
+        value: 50, // Da exactamente 50% OFF
         minAmount: 500,
         maxUses: 1000,
         currentUses: 45,
-        expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 días
+        expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         description: 'Descuento de bienvenida del 50%',
-        validPlans: ['Coaching Mensual', 'Transformación Acelerada', 'Metamorfosis Completa']
+        validPlans: ['Coaching Mensual'],
+        // Precios específicos para cada plan
+        specificDiscounts: {
+          'Coaching Mensual': { type: 'percentage', value: 50 } // $1199 -> $599
+        }
       },
       'TRANSFORMACION30': {
-        type: 'percentage',
-        value: 30,
+        type: 'percentage', 
+        value: 35, // CORREGIDO: Da 35% que es lo que se muestra en la página
         minAmount: 2000,
         maxUses: 500,
         currentUses: 12,
         expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        description: 'Descuento especial para transformación',
-        validPlans: ['Transformación Acelerada', 'Metamorfosis Completa']
+        description: 'Descuento especial para transformación del 35%',
+        validPlans: ['Transformación Acelerada'],
+        specificDiscounts: {
+          'Transformación Acelerada': { type: 'percentage', value: 35 } // $2999 -> $1949
+        }
       },
       'AHORRA20': {
         type: 'percentage',
-        value: 20,
+        value: 25, // CORREGIDO: Da 25% que es lo que se muestra para Metamorfosis
         minAmount: 1000,
         maxUses: 2000,
         currentUses: 234,
         expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        description: 'Descuento general del 20%',
-        validPlans: ['Coaching Mensual', 'Transformación Acelerada', 'Metamorfosis Completa']
+        description: 'Descuento especial del 25%',
+        validPlans: ['Metamorfosis Completa'],
+        specificDiscounts: {
+          'Metamorfosis Completa': { type: 'percentage', value: 25 } // $4299 -> $3224
+        }
       },
+      // Cupones adicionales que SÍ son independientes
       'FLASH15': {
         type: 'percentage',
         value: 15,
         minAmount: 0,
         maxUses: 100,
         currentUses: 78,
-        expiryDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 días
+        expiryDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
         description: 'Oferta flash del 15%',
         validPlans: ['Coaching Mensual', 'Transformación Acelerada', 'Metamorfosis Completa']
       },
@@ -58,16 +69,6 @@ export default async function handler(req, res) {
         expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         description: 'Descuento fijo de $500 MXN',
         validPlans: ['Transformación Acelerada', 'Metamorfosis Completa']
-      },
-      'ESTUDIANTE25': {
-        type: 'percentage',
-        value: 25,
-        minAmount: 1000,
-        maxUses: 200,
-        currentUses: 67,
-        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 días
-        description: 'Descuento para estudiantes',
-        validPlans: ['Coaching Mensual', 'Transformación Acelerada']
       }
     };
 
@@ -75,38 +76,37 @@ export default async function handler(req, res) {
     if (code === 'SUGGEST') {
       const suggestions = [];
       
-      // Sugerir el mejor cupón disponible para el plan
-      Object.keys(coupons).forEach(couponCode => {
+      // Sugerir el cupón específico para cada plan
+      const planSpecificCoupons = {
+        'Coaching Mensual': ['BIENVENIDO50'],
+        'Transformación Acelerada': ['TRANSFORMACION30'],
+        'Metamorfosis Completa': ['AHORRA20']
+      };
+      
+      const recommendedCoupons = planSpecificCoupons[planName] || ['BIENVENIDO50'];
+      
+      recommendedCoupons.forEach(couponCode => {
         const coupon = coupons[couponCode];
-        const now = new Date();
-        
-        if (
-          coupon.validPlans.includes(planName) &&
-          originalPrice >= coupon.minAmount &&
-          coupon.currentUses < coupon.maxUses &&
-          now < coupon.expiryDate
-        ) {
-          const discount = coupon.type === 'percentage' 
-            ? `${coupon.value}% OFF`
-            : `$${coupon.value} OFF`;
+        if (coupon && coupon.validPlans.includes(planName)) {
+          const specificDiscount = coupon.specificDiscounts?.[planName] || coupon;
+          const discount = specificDiscount.type === 'percentage' 
+            ? `${specificDiscount.value}% OFF`
+            : `$${specificDiscount.value} OFF`;
           
           suggestions.push({
             code: couponCode,
             discount: discount,
             description: coupon.description,
-            savings: coupon.type === 'percentage' 
-              ? Math.round(originalPrice * coupon.value / 100)
-              : coupon.value,
-            urgency: coupon.expiryDate.getTime() - now.getTime() < 3 * 24 * 60 * 60 * 1000 // Menos de 3 días
+            savings: specificDiscount.type === 'percentage' 
+              ? Math.round(originalPrice * specificDiscount.value / 100)
+              : specificDiscount.value,
+            urgency: coupon.expiryDate.getTime() - Date.now() < 3 * 24 * 60 * 60 * 1000
           });
         }
       });
 
-      // Ordenar por mayor descuento
-      suggestions.sort((a, b) => b.savings - a.savings);
-
       return res.status(200).json({
-        suggestions: suggestions.slice(0, 2) // Solo las 2 mejores sugerencias
+        suggestions: suggestions
       });
     }
 
@@ -154,26 +154,24 @@ export default async function handler(req, res) {
       });
     }
 
-    // Calcular descuento
+    // CALCULAR DESCUENTO ESPECÍFICO PARA EL PLAN
+    const specificDiscount = coupon.specificDiscounts?.[planName] || coupon;
     let discount, finalPrice;
     
-    if (coupon.type === 'percentage') {
-      discount = Math.round(originalPrice * coupon.value / 100);
+    if (specificDiscount.type === 'percentage') {
+      discount = Math.round(originalPrice * specificDiscount.value / 100);
       finalPrice = originalPrice - discount;
     } else {
-      discount = coupon.value;
+      discount = specificDiscount.value;
       finalPrice = Math.max(0, originalPrice - discount);
     }
-
-    // Incrementar contador de usos (en un sistema real, esto se haría en base de datos)
-    // coupons[code].currentUses += 1;
 
     res.status(200).json({
       valid: true,
       coupon: {
         code: code,
-        type: coupon.type,
-        value: coupon.value,
+        type: specificDiscount.type,
+        value: specificDiscount.value,
         description: coupon.description
       },
       originalPrice: originalPrice,
