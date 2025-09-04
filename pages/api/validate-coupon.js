@@ -180,4 +180,14 @@ export default async function handler(req, res) {
       discount: discount,
       finalPrice: finalPrice,
       savings: discount,
-      message: `¡Cupón aplicado! Ahorras $${discount} M
+      message: `¡Cupón aplicado! Ahorras ${discount} MXN`
+    });
+
+  } catch (error) {
+    console.error('Error validating coupon:', error);
+    res.status(500).json({
+      valid: false,
+      error: 'Error interno del servidor'
+    });
+  }
+}
