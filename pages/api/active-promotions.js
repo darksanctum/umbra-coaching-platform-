@@ -7,141 +7,189 @@ export default async function handler(req, res) {
   try {
     const now = new Date();
     
-    // Promociones activas - configurar según tus necesidades
+    // PROMOCIONES ACTIVAS CON ALTA CONVERSIÓN
     const promotions = [
       {
-        id: 'promo_satori_2025',
-        name: 'Promoción Satori',
-        description: '¡Descuento especial del 20% por tiempo limitado!',
+        id: 'promo_urgencia_40',
+        name: 'Oferta Flash 40%',
+        description: '¡Solo por tiempo limitado! 40% de descuento en todos los planes',
         type: 'percentage',
-        value: 20,
-        code: 'SATORI20',
-        startDate: '2025-01-15T00:00:00Z',
-        endDate: '2025-02-28T23:59:59Z',
-        plans: ['all'], // 'all' o nombres específicos de planes
-        minimumAmount: 1200,
-        isActive: true,
-        priority: 1, // Prioridad para mostrar (1 = más alta)
-        bannerText: '🔥 Oferta Limitada: 20% OFF con código SATORI20',
-        bannerColor: '#CF2323'
-      },
-      {
-        id: 'promo_transform_feb',
-        name: 'Transformación Especial',
-        description: 'Descuento del 25% en planes de transformación',
-        type: 'percentage',
-        value: 25,
-        code: 'TRANSFORM25',
+        value: 40,
+        code: 'AHORA40',
         startDate: '2025-02-01T00:00:00Z',
         endDate: '2025-03-31T23:59:59Z',
-        plans: ['Transformación Acelerada', 'Metamorfosis Completa'],
-        minimumAmount: 2000,
-        isActive: true,
-        priority: 2,
-        bannerText: '⚡ Transforma tu físico: 25% OFF en planes avanzados',
-        bannerColor: '#8b0000'
-      },
-      {
-        id: 'promo_new_client',
-        name: 'Bienvenida Nuevos Clientes',
-        description: '$500 de descuento para nuevos clientes',
-        type: 'fixed',
-        value: 500,
-        code: 'PRIMERA50', // Error intencional en el nombre para mostrar flexibilidad
-        startDate: '2025-01-01T00:00:00Z',
-        endDate: '2025-06-30T23:59:59Z',
-        plans: ['all'],
-        minimumAmount: 1500,
-        isActive: true,
-        priority: 3,
-        bannerText: '🎯 Primera vez: $500 MXN de descuento',
-        bannerColor: '#CF2323'
-      },
-      
-      // Ejemplo de promoción desactivada
-      {
-        id: 'promo_holiday_2024',
-        name: 'Promoción Navideña 2024',
-        description: 'Descuento navideño del 30%',
-        type: 'percentage',
-        value: 30,
-        code: 'NAVIDAD30',
-        startDate: '2024-12-15T00:00:00Z',
-        endDate: '2025-01-15T23:59:59Z',
         plans: ['all'],
         minimumAmount: 1000,
-        isActive: false, // Desactivada
-        priority: 4,
-        bannerText: '🎄 Oferta Navideña: 30% OFF',
-        bannerColor: '#22c55e'
+        isActive: true, // 🔥 ACTIVA PARA CONVERSIÓN INMEDIATA
+        priority: 1,
+        bannerText: '🔥 OFERTA FLASH: 40% OFF - ¡Solo por tiempo limitado!',
+        bannerColor: '#DC2626',
+        urgencyText: 'Termina pronto',
+        ctaText: 'Aprovechar ahora',
+        savings: 'Ahorra hasta $1,719 MXN'
       },
-      
-      // Ejemplo de promoción futura
       {
-        id: 'promo_summer_2025',
-        name: 'Promoción de Verano 2025',
-        description: 'Descuento de verano del 30%',
+        id: 'promo_bienvenida_50',
+        name: 'Bienvenida Especial',
+        description: '50% de descuento para nuevos clientes',
+        type: 'percentage',
+        value: 50,
+        code: 'BIENVENIDO50',
+        startDate: '2025-02-01T00:00:00Z',
+        endDate: '2025-12-31T23:59:59Z',
+        plans: ['all'],
+        minimumAmount: 1199,
+        isActive: true, // 🎯 PERFECTA PARA NUEVOS CLIENTES
+        priority: 2,
+        bannerText: '🎯 BIENVENIDO: 50% OFF en tu primera transformación',
+        bannerColor: '#7C3AED',
+        urgencyText: 'Primera compra',
+        ctaText: 'Comenzar transformación',
+        savings: 'Ahorra hasta $2,149 MXN'
+      },
+      {
+        id: 'promo_24_horas',
+        name: 'Solo 24 Horas',
+        description: '45% de descuento válido solo por 24 horas',
+        type: 'percentage',
+        value: 45,
+        code: 'SOLO24H',
+        startDate: '2025-02-09T00:00:00Z',
+        endDate: '2025-02-10T23:59:59Z',
+        plans: ['all'],
+        minimumAmount: 1199,
+        isActive: false, // Activar para campañas específicas
+        priority: 3,
+        bannerText: '⏰ SOLO 24H: 45% OFF - ¡No te quedes sin tu lugar!',
+        bannerColor: '#EF4444',
+        urgencyText: 'Termina en 24h',
+        ctaText: 'Asegurar mi lugar',
+        savings: 'Ahorra hasta $1,934 MXN'
+      },
+      {
+        id: 'promo_quedan_pocos',
+        name: 'Últimos Lugares',
+        description: '38% de descuento - Solo quedan 5 lugares',
+        type: 'percentage',
+        value: 38,
+        code: 'QUEDAN5',
+        startDate: '2025-02-01T00:00:00Z',
+        endDate: '2025-03-31T23:59:59Z',
+        plans: ['all'],
+        minimumAmount: 1199,
+        isActive: true, // 🏃‍♂️ FOMO ACTIVATION
+        priority: 4,
+        bannerText: '🏃‍♂️ ¡ÚLTIMOS 5 LUGARES! 38% OFF',
+        bannerColor: '#F59E0B',
+        urgencyText: 'Solo 5 lugares',
+        ctaText: 'Reservar mi lugar',
+        savings: 'Ahorra hasta $1,633 MXN'
+      },
+      {
+        id: 'promo_metamorfosis_30',
+        name: 'Metamorfosis Premium',
+        description: '30% OFF en el plan más completo',
         type: 'percentage',
         value: 30,
-        code: 'VERANO30',
-        startDate: '2025-06-01T00:00:00Z',
-        endDate: '2025-08-31T23:59:59Z',
-        plans: ['all'],
-        minimumAmount: 2000,
-        isActive: true,
+        code: 'METAMORFOSIS30',
+        startDate: '2025-02-01T00:00:00Z',
+        endDate: '2025-06-30T23:59:59Z',
+        plans: ['Metamorfosis Completa'],
+        minimumAmount: 3000,
+        isActive: true, // 💪 UPSELLING ACTIVATION
         priority: 5,
-        bannerText: '🏖️ Verano Fit: 30% OFF en todos los planes',
-        bannerColor: '#f59e0b'
+        bannerText: '💪 METAMORFOSIS PREMIUM: 30% OFF en plan completo',
+        bannerColor: '#10B981',
+        urgencyText: 'Plan premium',
+        ctaText: 'Elegir metamorfosis',
+        savings: 'Ahorra $1,289 MXN'
+      },
+      {
+        id: 'promo_febrero_2025',
+        name: 'Febrero de Transformación',
+        description: '30% de descuento especial de febrero',
+        type: 'percentage',
+        value: 30,
+        code: 'FEBRERO2025',
+        startDate: '2025-02-01T00:00:00Z',
+        endDate: '2025-02-28T23:59:59Z',
+        plans: ['all'],
+        minimumAmount: 1199,
+        isActive: true, // 📅 TEMPORAL ACTIVATION
+        priority: 6,
+        bannerText: '📅 FEBRERO 2025: 30% OFF - Tu mes de transformación',
+        bannerColor: '#8B5CF6',
+        urgencyText: 'Solo en febrero',
+        ctaText: 'Transformarme en febrero',
+        savings: 'Ahorra hasta $1,289 MXN'
       }
     ];
 
     // Filtrar promociones activas y vigentes
     const activePromotions = promotions.filter(promo => {
-      // Verificar si está activa
       if (!promo.isActive) return false;
       
-      // Verificar fechas
       const startDate = new Date(promo.startDate);
       const endDate = new Date(promo.endDate);
       
       return now >= startDate && now <= endDate;
     });
 
-    // Ordenar por prioridad
+    // Ordenar por prioridad (menor número = mayor prioridad)
     activePromotions.sort((a, b) => a.priority - b.priority);
 
-    // Crear respuesta con información útil para el frontend
+    // Calcular tiempo restante para promociones con urgencia
+    const promotionsWithCountdown = activePromotions.map(promo => {
+      const endTime = new Date(promo.endDate).getTime();
+      const currentTime = now.getTime();
+      const timeLeft = endTime - currentTime;
+      
+      let countdown = null;
+      if (timeLeft > 0) {
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        
+        if (days > 0) {
+          countdown = `${days}d ${hours}h`;
+        } else if (hours > 0) {
+          countdown = `${hours}h ${minutes}m`;
+        } else {
+          countdown = `${minutes}m`;
+        }
+      }
+      
+      return {
+        ...promo,
+        countdown,
+        isUrgent: timeLeft < (24 * 60 * 60 * 1000) // Menos de 24 horas
+      };
+    });
+
     const response = {
       success: true,
-      count: activePromotions.length,
-      promotions: activePromotions.map(promo => ({
-        id: promo.id,
-        name: promo.name,
-        description: promo.description,
-        code: promo.code,
-        type: promo.type,
-        value: promo.value,
-        plans: promo.plans,
-        minimumAmount: promo.minimumAmount,
-        endDate: promo.endDate,
-        bannerText: promo.bannerText,
-        bannerColor: promo.bannerColor,
-        priority: promo.priority,
-        timeRemaining: getTimeRemaining(promo.endDate)
-      })),
+      count: promotionsWithCountdown.length,
+      promotions: promotionsWithCountdown,
+      
       // Promoción destacada (la de mayor prioridad)
-      featured: activePromotions.length > 0 ? {
-        code: activePromotions[0].code,
-        bannerText: activePromotions[0].bannerText,
-        bannerColor: activePromotions[0].bannerColor,
-        discount: activePromotions[0].value,
-        type: activePromotions[0].type
+      featured: promotionsWithCountdown.length > 0 ? {
+        ...promotionsWithCountdown[0],
+        displayText: `${promotionsWithCountdown[0].bannerText} ${promotionsWithCountdown[0].countdown ? `- Termina en ${promotionsWithCountdown[0].countdown}` : ''}`
       } : null,
+      
+      // Mejores ofertas por categoría
+      bestOffers: {
+        highest: promotionsWithCountdown.find(p => p.value >= 45),
+        welcome: promotionsWithCountdown.find(p => p.code.includes('BIENVENIDO')),
+        urgent: promotionsWithCountdown.find(p => p.isUrgent),
+        premium: promotionsWithCountdown.find(p => p.plans[0] !== 'all')
+      },
+      
       lastUpdated: now.toISOString()
     };
 
-    // Headers para cache (opcional)
-    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=600'); // Cache por 5 minutos
+    // Headers para cache optimizado
+    res.setHeader('Cache-Control', 's-maxage=180, stale-while-revalidate=300'); // Cache por 3 minutos
     
     return res.status(200).json(response);
 
@@ -155,32 +203,4 @@ export default async function handler(req, res) {
       featured: null
     });
   }
-}
-
-// Función helper para calcular tiempo restante
-function getTimeRemaining(endDate) {
-  const now = new Date().getTime();
-  const end = new Date(endDate).getTime();
-  const difference = end - now;
-
-  if (difference <= 0) {
-    return { expired: true };
-  }
-
-  const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-
-  return {
-    expired: false,
-    days,
-    hours,
-    minutes,
-    totalHours: Math.floor(difference / (1000 * 60 * 60)),
-    formatted: days > 0 
-      ? `${days}d ${hours}h` 
-      : hours > 0 
-      ? `${hours}h ${minutes}m`
-      : `${minutes}m`
-  };
 }
