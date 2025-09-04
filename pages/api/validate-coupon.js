@@ -7,283 +7,177 @@ export default async function handler(req, res) {
   try {
     const { code, originalPrice, planName } = req.body;
 
-    if (!code || !originalPrice) {
-      return res.status(400).json({ error: 'Código y precio son requeridos' });
-    }
-
-    const now = new Date();
-    
-    // BASE DE CUPONES ATRACTIVOS PARA CONVERSIÓN
+    // Cupones disponibles
     const coupons = {
-      // 🔥 CUPONES DE URGENCIA (Alta conversión)
-      'AHORA40': {
-        type: 'percentage',
-        value: 40,
-        description: '¡40% OFF por tiempo limitado! Solo hoy',
-        expiresAt: new Date('2025-03-31'),
-        usageLimit: 20,
-        currentUsage: 3,
-        minimumAmount: 1000,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 1
-      },
-      'ULTIMAHORA': {
-        type: 'percentage',
-        value: 35,
-        description: 'Última hora: 35% de descuento',
-        expiresAt: new Date('2025-03-15'),
-        usageLimit: 15,
-        currentUsage: 2,
-        minimumAmount: 1000,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 2
-      },
-      
-      // 🎯 CUPONES DE BIENVENIDA (Conversión de nuevos)
       'BIENVENIDO50': {
         type: 'percentage',
         value: 50,
-        description: '¡Bienvenido! 50% de descuento en tu primer plan',
-        expiresAt: new Date('2025-12-31'),
-        usageLimit: 100,
-        currentUsage: 8,
-        minimumAmount: 1199,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 3
+        minAmount: 500,
+        maxUses: 1000,
+        currentUses: 45,
+        expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 días
+        description: 'Descuento de bienvenida del 50%',
+        validPlans: ['Coaching Mensual', 'Transformación Acelerada', 'Metamorfosis Completa']
       },
-      'PRIMERA600': {
-        type: 'fixed',
-        value: 600,
-        description: 'Tu primera transformación: $600 MXN de descuento',
-        expiresAt: new Date('2025-12-31'),
-        usageLimit: 50,
-        currentUsage: 5,
-        minimumAmount: 1500,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 4
-      },
-      
-      // 💪 CUPONES ESPECÍFICOS POR PLAN (Upselling)
-      'METAMORFOSIS30': {
+      'TRANSFORMACION30': {
         type: 'percentage',
         value: 30,
-        description: 'Descuento especial para Metamorfosis Completa',
-        expiresAt: new Date('2025-06-30'),
-        usageLimit: 25,
-        currentUsage: 1,
-        minimumAmount: 3000,
-        validPlans: ['Metamorfosis Completa'],
-        isActive: true,
-        priority: 5
+        minAmount: 2000,
+        maxUses: 500,
+        currentUses: 12,
+        expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        description: 'Descuento especial para transformación',
+        validPlans: ['Transformación Acelerada', 'Metamorfosis Completa']
       },
-      'TRANSFORM25': {
+      'AHORRA20': {
         type: 'percentage',
-        value: 25,
-        description: 'Acelera tu transformación con 25% OFF',
-        expiresAt: new Date('2025-06-30'),
-        usageLimit: 40,
-        currentUsage: 7,
-        minimumAmount: 2000,
-        validPlans: ['Transformación Acelerada'],
-        isActive: true,
-        priority: 6
+        value: 20,
+        minAmount: 1000,
+        maxUses: 2000,
+        currentUses: 234,
+        expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        description: 'Descuento general del 20%',
+        validPlans: ['Coaching Mensual', 'Transformación Acelerada', 'Metamorfosis Completa']
       },
-      
-      // 🏃‍♂️ CUPONES DE ACCIÓN RÁPIDA (FOMO)
-      'SOLO24H': {
+      'FLASH15': {
         type: 'percentage',
-        value: 45,
-        description: 'Solo 24 horas: 45% de descuento',
-        expiresAt: new Date('2025-02-10'),
-        usageLimit: 10,
-        currentUsage: 1,
-        minimumAmount: 1199,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 7
+        value: 15,
+        minAmount: 0,
+        maxUses: 100,
+        currentUses: 78,
+        expiryDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 días
+        description: 'Oferta flash del 15%',
+        validPlans: ['Coaching Mensual', 'Transformación Acelerada', 'Metamorfosis Completa']
       },
-      'QUEDAN5': {
-        type: 'percentage',
-        value: 38,
-        description: 'Solo quedan 5 lugares con 38% OFF',
-        expiresAt: new Date('2025-03-31'),
-        usageLimit: 5,
-        currentUsage: 0,
-        minimumAmount: 1199,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 8
-      },
-      
-      // 📱 CUPONES SOCIALES (Viral marketing)
-      'INFLUENCER': {
-        type: 'percentage',
-        value: 55,
-        description: 'Código exclusivo de influencer',
-        expiresAt: new Date('2025-12-31'),
-        usageLimit: 30,
-        currentUsage: 12,
-        minimumAmount: 1199,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 9
-      },
-      'REFERIDO': {
-        type: 'percentage',
-        value: 25,
-        description: 'Descuento por referido de cliente',
-        expiresAt: new Date('2025-12-31'),
-        usageLimit: 200,
-        currentUsage: 23,
-        minimumAmount: 1199,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 10
-      },
-      
-      // 🎂 CUPONES ESTACIONALES
-      'FEBRERO2025': {
-        type: 'percentage',
-        value: 30,
-        description: 'Febrero de transformación: 30% OFF',
-        expiresAt: new Date('2025-02-28'),
-        usageLimit: 50,
-        currentUsage: 15,
-        minimumAmount: 1199,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 11
-      },
-      'VERANO2025': {
-        type: 'percentage',
-        value: 35,
-        description: 'Prepárate para el verano: 35% de descuento',
-        expiresAt: new Date('2025-06-30'),
-        usageLimit: 100,
-        currentUsage: 8,
-        minimumAmount: 1199,
-        validPlans: ['all'],
-        isActive: false, // Activar cuando llegue la temporada
-        priority: 12
-      },
-
-      // 🎁 CUPONES PREMIUM (Para clientes VIP)
-      'VIP60': {
-        type: 'percentage',
-        value: 60,
-        description: 'Acceso VIP: 60% de descuento exclusivo',
-        expiresAt: new Date('2025-12-31'),
-        usageLimit: 10,
-        currentUsage: 2,
-        minimumAmount: 2000,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 13
-      },
-      'ELITE': {
+      'PRIMERA500': {
         type: 'fixed',
-        value: 1500,
-        description: 'Cliente Elite: $1500 MXN de descuento',
-        expiresAt: new Date('2025-12-31'),
-        usageLimit: 5,
-        currentUsage: 1,
-        minimumAmount: 3000,
-        validPlans: ['all'],
-        isActive: true,
-        priority: 14
+        value: 500,
+        minAmount: 2000,
+        maxUses: 50,
+        currentUses: 8,
+        expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        description: 'Descuento fijo de $500 MXN',
+        validPlans: ['Transformación Acelerada', 'Metamorfosis Completa']
+      },
+      'ESTUDIANTE25': {
+        type: 'percentage',
+        value: 25,
+        minAmount: 1000,
+        maxUses: 200,
+        currentUses: 67,
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 días
+        description: 'Descuento para estudiantes',
+        validPlans: ['Coaching Mensual', 'Transformación Acelerada']
       }
     };
 
-    const coupon = coupons[code.toUpperCase()];
+    // Si el código es "SUGGEST", devolver cupones sugeridos
+    if (code === 'SUGGEST') {
+      const suggestions = [];
+      
+      // Sugerir el mejor cupón disponible para el plan
+      Object.keys(coupons).forEach(couponCode => {
+        const coupon = coupons[couponCode];
+        const now = new Date();
+        
+        if (
+          coupon.validPlans.includes(planName) &&
+          originalPrice >= coupon.minAmount &&
+          coupon.currentUses < coupon.maxUses &&
+          now < coupon.expiryDate
+        ) {
+          const discount = coupon.type === 'percentage' 
+            ? `${coupon.value}% OFF`
+            : `$${coupon.value} OFF`;
+          
+          suggestions.push({
+            code: couponCode,
+            discount: discount,
+            description: coupon.description,
+            savings: coupon.type === 'percentage' 
+              ? Math.round(originalPrice * coupon.value / 100)
+              : coupon.value,
+            urgency: coupon.expiryDate.getTime() - now.getTime() < 3 * 24 * 60 * 60 * 1000 // Menos de 3 días
+          });
+        }
+      });
 
-    if (!coupon) {
-      return res.status(404).json({ 
-        error: 'Código de descuento no válido',
-        valid: false 
+      // Ordenar por mayor descuento
+      suggestions.sort((a, b) => b.savings - a.savings);
+
+      return res.status(200).json({
+        suggestions: suggestions.slice(0, 2) // Solo las 2 mejores sugerencias
       });
     }
 
-    // Validaciones
-    const errors = [];
-
-    if (!coupon.isActive) {
-      errors.push('Este código no está disponible actualmente');
+    // Validar cupón específico
+    const coupon = coupons[code];
+    
+    if (!coupon) {
+      return res.status(400).json({
+        valid: false,
+        error: 'Código de cupón no existe'
+      });
     }
 
-    if (now > new Date(coupon.expiresAt)) {
-      errors.push('Este código ha expirado');
+    const now = new Date();
+
+    // Verificar expiración
+    if (now > coupon.expiryDate) {
+      return res.status(400).json({
+        valid: false,
+        error: 'El cupón ha expirado'
+      });
     }
 
-    if (coupon.usageLimit && coupon.currentUsage >= coupon.usageLimit) {
-      errors.push('Este código ha alcanzado su límite de uso');
+    // Verificar límite de usos
+    if (coupon.currentUses >= coupon.maxUses) {
+      return res.status(400).json({
+        valid: false,
+        error: 'El cupón ha alcanzado su límite de usos'
+      });
     }
 
-    if (originalPrice < coupon.minimumAmount) {
-      errors.push(`Este descuento requiere una compra mínima de $${coupon.minimumAmount} MXN`);
+    // Verificar monto mínimo
+    if (originalPrice < coupon.minAmount) {
+      return res.status(400).json({
+        valid: false,
+        error: `Monto mínimo requerido: $${coupon.minAmount} MXN`
+      });
     }
 
-    if (planName && coupon.validPlans[0] !== 'all') {
-      const isValidPlan = coupon.validPlans.some(validPlan => 
-        planName.toLowerCase().includes(validPlan.toLowerCase())
-      );
-      if (!isValidPlan) {
-        errors.push('Este código no es válido para el plan seleccionado');
-      }
-    }
-
-    if (errors.length > 0) {
-      return res.status(400).json({ 
-        error: errors[0],
-        valid: false
+    // Verificar plan válido
+    if (!coupon.validPlans.includes(planName)) {
+      return res.status(400).json({
+        valid: false,
+        error: 'Este cupón no es válido para el plan seleccionado'
       });
     }
 
     // Calcular descuento
-    let discountAmount = 0;
+    let discount, finalPrice;
+    
     if (coupon.type === 'percentage') {
-      discountAmount = Math.round((originalPrice * coupon.value) / 100);
-    } else if (coupon.type === 'fixed') {
-      discountAmount = Math.min(coupon.value, originalPrice - 1);
+      discount = Math.round(originalPrice * coupon.value / 100);
+      finalPrice = originalPrice - discount;
+    } else {
+      discount = coupon.value;
+      finalPrice = Math.max(0, originalPrice - discount);
     }
 
-    const finalPrice = originalPrice - discountAmount;
-    const savings = discountAmount;
+    // Incrementar contador de usos (en un sistema real, esto se haría en base de datos)
+    // coupons[code].currentUses += 1;
 
-    return res.status(200).json({
+    res.status(200).json({
       valid: true,
       coupon: {
-        code: code.toUpperCase(),
+        code: code,
         type: coupon.type,
         value: coupon.value,
-        description: coupon.description,
-        priority: coupon.priority
+        description: coupon.description
       },
-      pricing: {
-        originalPrice,
-        discountAmount,
-        finalPrice,
-        savings,
-        discountPercentage: Math.round((discountAmount / originalPrice) * 100)
-      },
-      metadata: {
-        remainingUses: coupon.usageLimit ? coupon.usageLimit - coupon.currentUsage : null,
-        validUntil: coupon.expiresAt,
-        appliedAt: now.toISOString(),
-        urgencyMessage: coupon.usageLimit && (coupon.usageLimit - coupon.currentUsage) <= 5 
-          ? `¡Solo quedan ${coupon.usageLimit - coupon.currentUsage} usos!` 
-          : null
-      }
-    });
-
-  } catch (error) {
-    console.error('Error validating coupon:', error);
-    return res.status(500).json({ 
-      error: 'Error interno del servidor',
-      valid: false 
-    });
-  }
-}
+      originalPrice: originalPrice,
+      discount: discount,
+      finalPrice: finalPrice,
+      savings: discount,
+      message: `¡Cupón aplicado! Ahorras $${discount} M
