@@ -1,4 +1,297 @@
-import React, { useEffect, useState } from 'react';
+/* Campo manual SIMPLIFICADO */
+            <div style={{ 
+              display: 'flex', 
+              gap: '10px',
+              flexDirection: isMobile ? 'column' : 'row'
+            }}>
+              <input
+                type="text"
+                placeholder="O escribe tu código aquí..."
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                style={{
+                  flex: 1,
+                  padding: isMobile ? '14px' : '12px 16px',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '8px',
+                  fontSize: isMobile ? '16px' : '14px',
+                  outline: 'none',
+                  transition: 'all 0.3s ease',
+                  fontFamily: 'mono'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#0ea5e9';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(14, 165, 233, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e5e7eb';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+              <button
+                onClick={() => validateAndApplyCoupon(couponCode)}
+                disabled={!couponCode.trim()}
+                style={{
+                  padding: isMobile ? '14px 24px' : '12px 20px',
+                  background: couponCode.trim() ? 'linear-gradient(45deg, #0ea5e9, #0284c7)' : '#9ca3af',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: couponCode.trim() ? 'pointer' : 'not-allowed',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  width: isMobile ? '100%' : 'auto',
+                  transition: 'all 0.3s ease',
+                  transform: 'scale(1)'
+                }}
+                onMouseEnter={(e) => {
+                  if (couponCode.trim()) {
+                    e.target.style.transform = 'scale(1.02)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                }}
+              >
+                ✨ Aplicar
+              </button>
+            </div>
+
+            {/* Cupón aplicado */}
+            {couponApplied && (
+              <div style={{
+                background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
+                border: '2px solid #16a34a',
+                borderRadius: '12px',
+                padding: '15px',
+                marginTop: '15px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                animation: 'slideDown 0.5s ease-out'
+              }}>
+                <div>
+                  <div style={{ 
+                    fontWeight: 'bold', 
+                    color: '#16a34a',
+                    fontSize: '1.1rem',
+                    marginBottom: '5px'
+                  }}>
+                    🎉 ¡{couponApplied.code} aplicado!
+                  </div>
+                  <div style={{ 
+                    fontSize: '0.9rem', 
+                    color: '#15803d',
+                    fontWeight: '600'
+                  }}>
+                    Ahorras: {formatPrice(couponApplied.discount)}
+                  </div>
+                </div>
+                <button
+                  onClick={removeCoupon}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#dc2626',
+                    cursor: 'pointer',
+                    fontSize: '1.5rem',
+                    padding: '8px',
+                    borderRadius: '50%',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = '#fee2e2';
+                    e.target.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'none';
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {/* Error de cupón */}
+            {couponError && (
+              <div style={{
+                color: '#dc2626',
+                background: 'linear-gradient(135deg, #fef2f2, #fee2e2)',
+                border: '2px solid #fca5a5',
+                borderRadius: '8px',
+                padding: '12px',
+                fontSize: '0.9rem',
+                marginTop: '15px',
+                animation: 'shake 0.5s ease-in-out'
+              }}>
+                ❌ {couponError}
+              </div>
+            )}
+
+            {/* Mensaje de ayuda */}
+            {!couponApplied && (
+              <div style={{
+                marginTop: '15px',
+                padding: '12px',
+                background: '#fef3c7',
+                borderRadius: '8px',
+                fontSize: '0.85rem',
+                color: '#92400e',
+                textAlign: 'center'
+              }}>
+                💡 <strong>Tip:</strong> Usa <code style={{background: '#fff', padding: '2px 6px', borderRadius: '4px'}}>BIENVENIDO50</code> para 50% de descuento
+              </div>
+            )}
+          </div>
+
+          {/* Error general */}
+          {error && (
+            <div style={{
+              color: '#dc2626',
+              background: 'linear-gradient(135deg, #fef2f2, #fee2e2)',
+              padding: '16px',
+              borderRadius: '12px',
+              marginBottom: '20px',
+              border: '2px solid #fca5a5',
+              fontSize: isMobile ? '0.9rem' : '1rem',
+              animation: 'slideDown 0.5s ease-out'
+            }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+                ⚠️ Error de procesamiento
+              </div>
+              {error}
+            </div>
+          )}
+          
+          {/* Loading mejorado */}
+          {isLoading && !error && (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '3rem',
+              color: '#6b7280'
+            }}>
+              <div style={{
+                width: '50px',
+                height: '50px',
+                border: '4px solid #f3f4f6',
+                borderTop: '4px solid #0ea5e9',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 1.5rem'
+              }}></div>
+              <p style={{ fontSize: '1.1rem', fontWeight: '500' }}>
+                🔐 Cargando pago seguro...
+              </p>
+              <p style={{ fontSize: '0.9rem', color: '#9ca3af', marginTop: '0.5rem' }}>
+                Esto solo toma unos segundos
+              </p>
+            </div>
+          )}
+          
+          {/* Container del Brick de Mercado Pago */}
+          <div 
+            id="cardPaymentBrick_container" 
+            style={{
+              minHeight: isLoading ? '0' : '450px',
+              opacity: isLoading ? 0 : 1,
+              transition: 'opacity 0.5s ease',
+              borderRadius: '12px',
+              overflow: 'hidden'
+            }}
+          ></div>
+
+          {/* Información de seguridad mejorada */}
+          <div style={{
+            marginTop: '1.5rem',
+            padding: '20px',
+            background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
+            borderRadius: '12px',
+            textAlign: 'center',
+            border: '1px solid #e2e8f0'
+          }}>
+            <div style={{
+              fontSize: '1rem',
+              color: '#475569',
+              marginBottom: '8px',
+              fontWeight: '600'
+            }}>
+              🔒 Pago 100% Seguro
+            </div>
+            <div style={{
+              fontSize: '0.85rem',
+              color: '#64748b',
+              lineHeight: '1.5'
+            }}>
+              Procesado por <strong>Mercado Pago</strong> con encriptación SSL. 
+              Tus datos están protegidos.
+            </div>
+          </div>
+
+          {/* Garantía */}
+          {!isLoading && (
+            <div style={{
+              marginTop: '1rem',
+              padding: '15px',
+              background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
+              borderRadius: '10px',
+              textAlign: 'center',
+              border: '1px solid #86efac',
+              animation: 'fadeInUp 0.8s ease-out'
+            }}>
+              <div style={{
+                fontSize: '0.9rem',
+                color: '#166534',
+                fontWeight: '600'
+              }}>
+                ✅ Garantía de satisfacción de 30 días
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Estilos CSS en línea para animaciones */}
+        <style jsx>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          
+          @keyframes slideDown {
+            from {
+              opacity: 0;
+              transform: translateY(-20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+          }
+          
+          @keyframes pulse {
+            0%, 100% { 
+              transform: scale(1);
+              box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+            }
+            50% { 
+              transform: scale(1.05)import React, { useEffect, useState } from 'react';
 
 const PaymentModal = ({ plan, onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -6,9 +299,8 @@ const PaymentModal = ({ plan, onClose }) => {
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(null);
   const [couponError, setCouponError] = useState('');
-  const [suggestedCoupons, setSuggestedCoupons] = useState([]);
-  const [popularCoupons, setPopularCoupons] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   // Detectar móvil
   useEffect(() => {
@@ -21,42 +313,29 @@ const PaymentModal = ({ plan, onClose }) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Obtener cupones sugeridos y populares
+  // Animación de entrada
   useEffect(() => {
     if (plan) {
-      fetchSuggestedCoupons();
-      fetchPopularCoupons();
+      setTimeout(() => setIsVisible(true), 10);
     }
   }, [plan]);
 
-  const fetchSuggestedCoupons = async () => {
-    try {
-      const response = await fetch('/api/validate-coupon', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code: 'SUGGEST',
-          originalPrice: plan.price,
-          planName: plan.title
-        })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setSuggestedCoupons(data.suggestions || []);
-      }
-    } catch (error) {
-      console.error('Error fetching suggested coupons:', error);
-    }
+  // Formatear precio sin decimales innecesarios
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price).replace('MX$', '$');
   };
 
-  const fetchPopularCoupons = async () => {
-    setPopularCoupons([
-      { code: 'BIENVENIDO50', discount: '50% OFF', description: 'Primer descuento especial' },
-      { code: 'TRANSFORMACION30', discount: '30% OFF', description: 'Para planes de transformación' },
-      { code: 'AHORRA20', discount: '20% OFF', description: 'Descuento general' }
-    ]);
-  };
+  // CUPONES SIMPLIFICADOS - Solo los más importantes
+  const quickCoupons = [
+    { code: 'BIENVENIDO50', discount: '50%', color: '#CF2323' },
+    { code: 'TRANSFORMACION30', discount: '30%', color: '#FF6B35' },
+    { code: 'AHORRA20', discount: '20%', color: '#4ECDC4' }
+  ];
 
   const validateAndApplyCoupon = async (code) => {
     if (!code.trim()) return;
@@ -85,16 +364,6 @@ const PaymentModal = ({ plan, onClose }) => {
           value: data.coupon.value
         });
         setCouponCode(code.trim());
-        
-        // Reinicializar el modal con el nuevo precio
-        setTimeout(() => {
-          onClose();
-          setTimeout(() => {
-            const newPlan = { ...plan, price: data.finalPrice };
-            // Esto requeriría pasar una función para actualizar el plan
-            window.dispatchEvent(new CustomEvent('updatePlan', { detail: newPlan }));
-          }, 100);
-        }, 500);
       } else {
         setCouponError(data.error || 'Cupón inválido');
       }
@@ -109,9 +378,9 @@ const PaymentModal = ({ plan, onClose }) => {
     setCouponError('');
   };
 
-  const applySuggestedCoupon = (coupon) => {
-    setCouponCode(coupon.code);
-    validateAndApplyCoupon(coupon.code);
+  const applyCouponCode = (code) => {
+    setCouponCode(code);
+    validateAndApplyCoupon(code);
   };
 
   useEffect(() => {
@@ -142,12 +411,14 @@ const PaymentModal = ({ plan, onClose }) => {
         mp = new window.MercadoPago(publicKey);
         const bricksBuilder = mp.bricks();
 
+        const finalPrice = couponApplied ? couponApplied.finalPrice : plan.price;
+
         cardPaymentBrickController = await bricksBuilder.create(
           "cardPayment",
           "cardPaymentBrick_container",
           {
             initialization: {
-              amount: plan.price,
+              amount: finalPrice,
             },
             callbacks: {
               onReady: () => {
@@ -165,7 +436,7 @@ const PaymentModal = ({ plan, onClose }) => {
                     token: cardFormData.token,
                     issuer_id: cardFormData.issuer_id,
                     payment_method_id: cardFormData.payment_method_id,
-                    transaction_amount: Number(plan.price),
+                    transaction_amount: Number(finalPrice),
                     installments: Number(cardFormData.installments) || 1,
                     description: plan.title,
                     payer: {
@@ -175,10 +446,9 @@ const PaymentModal = ({ plan, onClose }) => {
                         number: cardFormData.payer?.identification?.number || '12345678901234567890',
                       },
                     },
-                    // Agregar información del cupón si se aplicó
                     metadata: couponApplied ? {
                       coupon_code: couponApplied.code,
-                      original_price: (plan.price / (1 - couponApplied.discount/100)).toFixed(2),
+                      original_price: plan.price,
                       discount_applied: couponApplied.discount
                     } : {}
                   };
@@ -203,7 +473,6 @@ const PaymentModal = ({ plan, onClose }) => {
                     throw new Error(result.error || 'Error en el pago');
                   }
 
-                  // Redirigir a página de éxito
                   window.location.href = '/gracias.html';
                   
                 } catch (error) {
@@ -234,7 +503,14 @@ const PaymentModal = ({ plan, onClose }) => {
     };
   }, [plan, couponApplied]);
 
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(onClose, 300);
+  };
+
   if (!plan) return null;
+
+  const finalPrice = couponApplied ? couponApplied.finalPrice : plan.price;
 
   const modalStyles = {
     overlay: {
@@ -250,69 +526,80 @@ const PaymentModal = ({ plan, onClose }) => {
       zIndex: 1000,
       padding: isMobile ? '0' : '2rem',
       overflowY: 'auto',
+      opacity: isVisible ? 1 : 0,
+      transition: 'opacity 0.3s ease',
+      backdropFilter: 'blur(5px)'
     },
     modal: {
       background: 'white',
-      borderRadius: isMobile ? '20px 20px 0 0' : '12px',
-      maxWidth: isMobile ? '100%' : '600px',
+      borderRadius: isMobile ? '20px 20px 0 0' : '16px',
+      maxWidth: isMobile ? '100%' : '650px',
       width: isMobile ? '100%' : '90%',
       maxHeight: isMobile ? '95vh' : '90vh',
-      overflow: 'auto',
+      overflow: 'hidden',
       position: 'relative',
       marginTop: isMobile ? '5vh' : '0',
       marginBottom: isMobile ? '0' : 'auto',
-    },
-    header: {
-      padding: isMobile ? '1.5rem 1.5rem 1rem' : '2rem 2rem 1rem',
-      borderBottom: '1px solid #e5e7eb',
-      position: 'sticky',
-      top: 0,
-      background: 'white',
-      zIndex: 10,
-    },
-    content: {
-      padding: isMobile ? '1rem 1.5rem' : '1.5rem 2rem',
-    },
-    closeButton: {
-      position: 'absolute',
-      top: isMobile ? '1rem' : '1.5rem',
-      right: isMobile ? '1rem' : '1.5rem',
-      background: 'none',
-      border: 'none',
-      fontSize: isMobile ? '1.8rem' : '2rem',
-      cursor: 'pointer',
-      color: '#6b7280',
-      zIndex: 11,
-      width: '40px',
-      height: '40px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: '50%',
-      transition: 'background-color 0.2s',
-    },
+      transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(50px) scale(0.9)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
+    }
   };
 
   return (
-    <div style={modalStyles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div style={modalStyles.overlay} onClick={(e) => e.target === e.currentTarget && handleClose()}>
       <div style={modalStyles.modal}>
-        <div style={modalStyles.header}>
+        {/* Header con animación */}
+        <div style={{
+          padding: isMobile ? '1.5rem 1.5rem 1rem' : '2rem 2rem 1rem',
+          borderBottom: '1px solid #e5e7eb',
+          position: 'sticky',
+          top: 0,
+          background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
+          zIndex: 10,
+          animation: 'slideDown 0.5s ease-out'
+        }}>
           <button 
-            onClick={onClose}
-            style={modalStyles.closeButton}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#f3f4f6'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+            onClick={handleClose}
+            style={{
+              position: 'absolute',
+              top: isMobile ? '1rem' : '1.5rem',
+              right: isMobile ? '1rem' : '1.5rem',
+              background: 'none',
+              border: 'none',
+              fontSize: isMobile ? '1.8rem' : '2rem',
+              cursor: 'pointer',
+              color: '#6b7280',
+              zIndex: 11,
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+              transform: 'scale(1)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#f3f4f6';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'transparent';
+              e.target.style.transform = 'scale(1)';
+            }}
           >
             ×
           </button>
           
           <h2 style={{ 
             margin: 0, 
-            fontSize: isMobile ? '1.3rem' : '1.5rem',
+            fontSize: isMobile ? '1.4rem' : '1.6rem',
             color: '#111827',
-            paddingRight: '50px'
+            paddingRight: '50px',
+            fontWeight: '700'
           }}>
-            Completa tu pago
+            🚀 Completa tu transformación
           </h2>
           
           <div style={{ marginTop: '0.5rem' }}>
@@ -325,332 +612,129 @@ const PaymentModal = ({ plan, onClose }) => {
               {plan.title}
             </h3>
             
+            {/* Precio con mejor tipografía */}
             <div style={{ 
-              marginTop: '0.5rem',
+              marginTop: '15px',
               display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
+              alignItems: 'baseline',
+              gap: '10px',
               flexWrap: 'wrap'
             }}>
               {couponApplied ? (
                 <>
                   <span style={{ 
-                    fontSize: isMobile ? '1rem' : '1.1rem', 
+                    fontSize: '1rem', 
                     textDecoration: 'line-through', 
-                    color: '#9ca3af'
+                    color: '#9ca3af',
+                    fontFamily: 'Inter, sans-serif'
                   }}>
-                    ${plan.price * (couponApplied.type === 'percentage' ? (100/(100-couponApplied.value)) : (plan.price/(plan.price-couponApplied.value)))} MXN
+                    {formatPrice(plan.price)}
                   </span>
                   <span style={{ 
-                    fontSize: isMobile ? '1.3rem' : '1.5rem', 
-                    fontWeight: 'bold',
-                    color: '#dc2626'
+                    fontSize: isMobile ? '1.8rem' : '2rem', 
+                    fontWeight: '800',
+                    color: '#dc2626',
+                    fontFamily: 'Inter, sans-serif'
                   }}>
-                    ${plan.price} MXN
+                    {formatPrice(finalPrice)}
                   </span>
                   <span style={{
-                    background: '#dc2626',
+                    background: 'linear-gradient(45deg, #dc2626, #ef4444)',
                     color: 'white',
-                    padding: '2px 8px',
-                    borderRadius: '12px',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold'
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: 'bold',
+                    animation: 'pulse 2s infinite'
                   }}>
-                    -{couponApplied.type === 'percentage' ? `${couponApplied.value}%` : `${couponApplied.value}`} OFF
+                    ¡Ahorras {formatPrice(couponApplied.discount)}!
                   </span>
                 </>
               ) : (
                 <span style={{ 
-                  fontSize: isMobile ? '1.3rem' : '1.5rem', 
-                  fontWeight: 'bold',
-                  color: '#111827'
+                  fontSize: isMobile ? '1.8rem' : '2rem', 
+                  fontWeight: '800',
+                  color: '#111827',
+                  fontFamily: 'Inter, sans-serif'
                 }}>
-                  ${plan.price} MXN
+                  {formatPrice(plan.price)}
                 </span>
               )}
             </div>
           </div>
         </div>
 
-        <div style={modalStyles.content}>
-          {/* Sistema de Cupones */}
-          <div style={{ marginBottom: '2rem' }}>
+        <div style={{ 
+          padding: isMobile ? '1rem 1.5rem' : '1.5rem 2rem',
+          overflowY: 'auto',
+          maxHeight: 'calc(95vh - 200px)'
+        }}>
+          {/* Sistema de Cupones SÚPER SIMPLIFICADO */}
+          <div style={{ 
+            marginBottom: '2rem',
+            padding: '20px',
+            background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
+            borderRadius: '12px',
+            border: '1px solid #0ea5e9'
+          }}>
             <h4 style={{ 
-              fontSize: isMobile ? '1rem' : '1.1rem',
-              marginBottom: '1rem',
-              color: '#374151'
+              fontSize: '1.1rem',
+              marginBottom: '15px',
+              color: '#0c4a6e',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}>
-              💰 ¿Tienes un código de descuento?
+              🎁 ¿Tienes un código de descuento?
             </h4>
             
-            {/* Cupones sugeridos */}
-            {suggestedCoupons.length > 0 && (
-              <div style={{ marginBottom: '1rem' }}>
-                <p style={{ 
-                  fontSize: '0.9rem', 
-                  color: '#6b7280', 
-                  marginBottom: '0.5rem' 
-                }}>
-                  🎉 Promoción especial disponible:
-                </p>
-                <div style={{ 
-                  display: 'flex', 
-                  flexWrap: 'wrap', 
-                  gap: '0.5rem' 
-                }}>
-                  {suggestedCoupons.map((coupon, index) => (
-                    <button
-                      key={index}
-                      onClick={() => applySuggestedCoupon(coupon)}
-                      style={{
-                        background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                        color: 'white',
-                        border: 'none',
-                        padding: isMobile ? '8px 12px' : '10px 16px',
-                        borderRadius: '8px',
-                        fontSize: isMobile ? '0.8rem' : '0.9rem',
-                        fontWeight: 'bold',
-                        cursor: 'pointer',
-                        transition: 'transform 0.2s',
-                        boxShadow: '0 2px 4px rgba(220, 38, 38, 0.3)'
-                      }}
-                      onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-                      onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                    >
-                      {coupon.code} - {coupon.discount}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Campo de cupón manual */}
+            {/* Cupones rápidos MUY VISIBLES */}
             <div style={{ 
-              display: 'flex', 
-              gap: '0.5rem',
-              marginBottom: '1rem',
-              flexDirection: isMobile ? 'column' : 'row'
+              marginBottom: '15px',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px',
+              justifyContent: 'center'
             }}>
-              <input
-                type="text"
-                placeholder="Ingresa tu código"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                style={{
-                  flex: 1,
-                  padding: isMobile ? '12px' : '10px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  fontSize: isMobile ? '16px' : '14px', // 16px previene zoom en iOS
-                  outline: 'none',
-                  transition: 'border-color 0.2s'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#dc2626'}
-                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
-              />
-              <button
-                onClick={() => validateAndApplyCoupon(couponCode)}
-                disabled={!couponCode.trim()}
-                style={{
-                  padding: isMobile ? '12px 20px' : '10px 16px',
-                  background: couponCode.trim() ? '#dc2626' : '#9ca3af',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: couponCode.trim() ? 'pointer' : 'not-allowed',
-                  fontSize: isMobile ? '14px' : '13px',
-                  fontWeight: '600',
-                  minWidth: isMobile ? 'auto' : '80px',
-                  width: isMobile ? '100%' : 'auto'
-                }}
-              >
-                Aplicar
-              </button>
-            </div>
-
-            {/* Cupón aplicado */}
-            {couponApplied && (
-              <div style={{
-                background: '#dcfce7',
-                border: '1px solid #16a34a',
-                borderRadius: '8px',
-                padding: '12px',
-                marginBottom: '1rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '0.5rem'
-              }}>
-                <div>
-                  <span style={{ fontWeight: 'bold', color: '#16a34a' }}>
-                    ✅ {couponApplied.code} aplicado
-                  </span>
-                  <div style={{ fontSize: '0.9rem', color: '#15803d' }}>
-                    Ahorro: ${(plan.price * (couponApplied.type === 'percentage' ? (100/(100-couponApplied.value)) : (plan.price/(plan.price-couponApplied.value))) - plan.price).toFixed(2)} MXN
-                  </div>
-                </div>
+              {quickCoupons.map((coupon, index) => (
                 <button
-                  onClick={removeCoupon}
+                  key={index}
+                  onClick={() => applyCouponCode(coupon.code)}
                   style={{
-                    background: 'none',
+                    background: `linear-gradient(45deg, ${coupon.color}, ${coupon.color}dd)`,
+                    color: 'white',
                     border: 'none',
-                    color: '#dc2626',
+                    padding: isMobile ? '12px 16px' : '15px 20px',
+                    borderRadius: '12px',
+                    fontSize: isMobile ? '0.9rem' : '1rem',
+                    fontWeight: 'bold',
                     cursor: 'pointer',
-                    fontSize: '1.2rem',
-                    padding: '4px'
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    boxShadow: `0 4px 15px ${coupon.color}33`,
+                    transform: 'scale(1)',
+                    flex: isMobile ? '1' : 'none',
+                    minWidth: isMobile ? '0' : '140px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'scale(1.05) translateY(-2px)';
+                    e.target.style.boxShadow = `0 8px 25px ${coupon.color}55`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'scale(1) translateY(0)';
+                    e.target.style.boxShadow = `0 4px 15px ${coupon.color}33`;
                   }}
                 >
-                  ✕
+                  <div style={{ fontSize: '0.8rem', opacity: '0.9' }}>
+                    {coupon.discount} OFF
+                  </div>
+                  <div style={{ fontFamily: 'mono', letterSpacing: '0.5px' }}>
+                    {coupon.code}
+                  </div>
                 </button>
-              </div>
-            )}
-
-            {/* Error de cupón */}
-            {couponError && (
-              <div style={{
-                color: '#dc2626',
-                background: '#fef2f2',
-                border: '1px solid #fecaca',
-                borderRadius: '6px',
-                padding: '8px 12px',
-                fontSize: '0.9rem',
-                marginBottom: '1rem'
-              }}>
-                {couponError}
-              </div>
-            )}
-
-            {/* Cupones populares */}
-            {popularCoupons.length > 0 && !couponApplied && (
-              <div>
-                <p style={{ 
-                  fontSize: '0.85rem', 
-                  color: '#6b7280', 
-                  marginBottom: '0.5rem' 
-                }}>
-                  Códigos populares:
-                </p>
-                <div style={{ 
-                  display: 'flex', 
-                  flexWrap: 'wrap', 
-                  gap: '0.5rem' 
-                }}>
-                  {popularCoupons.map((coupon, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setCouponCode(coupon.code);
-                        validateAndApplyCoupon(coupon.code);
-                      }}
-                      style={{
-                        background: '#f3f4f6',
-                        color: '#374151',
-                        border: '1px solid #d1d5db',
-                        padding: '6px 10px',
-                        borderRadius: '6px',
-                        fontSize: '0.75rem',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.background = '#e5e7eb';
-                        e.target.style.borderColor = '#9ca3af';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.background = '#f3f4f6';
-                        e.target.style.borderColor = '#d1d5db';
-                      }}
-                    >
-                      {coupon.code}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Error general */}
-          {error && (
-            <div style={{
-              color: '#dc2626',
-              background: '#fef2f2',
-              padding: '12px',
-              borderRadius: '6px',
-              marginBottom: '16px',
-              border: '1px solid #fecaca',
-              fontSize: isMobile ? '0.9rem' : '1rem'
-            }}>
-              {error}
+              ))}
             </div>
-          )}
-          
-          {/* Loading */}
-          {isLoading && !error && (
+
+            {/* Campo manual SIMPLIFICADO */}
             <div style={{ 
-              textAlign: 'center', 
-              padding: '2rem',
-              color: '#6b7280'
-            }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                border: '3px solid #f3f4f6',
-                borderTop: '3px solid #dc2626',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto 1rem'
-              }}></div>
-              <p>Cargando formulario de pago...</p>
-            </div>
-          )}
-          
-          {/* Container del Brick de Mercado Pago */}
-          <div 
-            id="cardPaymentBrick_container" 
-            style={{
-              minHeight: isLoading ? '0' : '400px',
-              opacity: isLoading ? 0 : 1,
-              transition: 'opacity 0.3s ease'
-            }}
-          ></div>
-
-          {/* Información de seguridad */}
-          <div style={{
-            marginTop: '1rem',
-            padding: '1rem',
-            background: '#f8fafc',
-            borderRadius: '8px',
-            fontSize: '0.85rem',
-            color: '#64748b',
-            textAlign: 'center'
-          }}>
-            🔒 Pago 100% seguro procesado por Mercado Pago
-          </div>
-        </div>
-
-        {/* Estilos CSS en línea para animaciones */}
-        <style jsx>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-          
-          @media (max-width: 768px) {
-            /* Prevenir zoom en inputs en iOS */
-            input[type="text"], input[type="email"], input[type="tel"] {
-              font-size: 16px !important;
-            }
-            
-            /* Mejorar scroll en modal */
-            .modal-content {
-              -webkit-overflow-scrolling: touch;
-            }
-          }
-        `}</style>
-      </div>
-    </div>
-  );
-};
-
-export default PaymentModal;
+              display: 'flex', 
+              gap: '10px',
