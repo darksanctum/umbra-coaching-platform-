@@ -180,7 +180,7 @@ export default async function handler(req, res) {
       discount: discount,
       finalPrice: finalPrice,
       savings: discount,
-      message: `¡Cupón aplicado! Ahorras ${discount} MXN`
+      message: `¡Cupón aplicado! Ahorras $${discount} MXN`
     });
 
   } catch (error) {
