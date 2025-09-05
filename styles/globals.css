@@ -1010,3 +1010,287 @@ body:hover .cursor-outline {
     position: relative;
     z-index: 2;
 }
+/* ⚡ EFECTO ELÉCTRICO PARA PLAN DE 15 SEMANAS ⚡ */
+
+/* Filtro SVG oculto */
+.electric-filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Contenedor principal del efecto eléctrico */
+.electric-plan {
+  position: relative;
+  z-index: 1;
+  transform: scale(1.05);
+}
+
+/* Border eléctrico principal */
+.electric-plan::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  background: linear-gradient(45deg, 
+    #CF2323 0%, 
+    #FF6B35 25%, 
+    #FFD700 50%, 
+    #00FF00 75%, 
+    #CF2323 100%
+  );
+  background-size: 400% 400%;
+  border-radius: 20px;
+  z-index: -1;
+  animation: electricFlow 3s ease-in-out infinite, electricGlow 2s ease-in-out infinite alternate;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  padding: 3px;
+  filter: drop-shadow(0 0 10px rgba(207, 35, 35, 0.5));
+}
+
+/* Efecto de glow exterior */
+.electric-plan::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  background: radial-gradient(circle, rgba(207, 35, 35, 0.3) 0%, transparent 70%);
+  border-radius: 24px;
+  z-index: -2;
+  animation: electricPulse 4s ease-in-out infinite;
+  filter: blur(8px);
+}
+
+/* Chispas eléctricas */
+.electric-plan .electric-sparks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.electric-plan .electric-sparks::before,
+.electric-plan .electric-sparks::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(0deg, transparent, #FFD700, transparent);
+  animation: spark1 3s linear infinite;
+  filter: drop-shadow(0 0 6px #FFD700);
+}
+
+.electric-plan .electric-sparks::before {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.electric-plan .electric-sparks::after {
+  bottom: 20%;
+  right: 15%;
+  animation-delay: 1.5s;
+  background: linear-gradient(0deg, transparent, #00FF00, transparent);
+  filter: drop-shadow(0 0 6px #00FF00);
+}
+
+/* Badge eléctrico */
+.electric-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #CF2323, #FFD700, #00FF00);
+  background-size: 300% 300%;
+  color: #000;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  z-index: 10;
+  box-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.5),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+  animation: electricFlow 2s ease-in-out infinite;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+/* Botón eléctrico */
+.electric-button {
+  background: linear-gradient(135deg, #CF2323, #FFD700, #00FF00) !important;
+  background-size: 300% 300% !important;
+  color: #000 !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8) !important;
+  border: 2px solid transparent !important;
+  position: relative !important;
+  overflow: hidden !important;
+  animation: electricFlow 3s ease-in-out infinite !important;
+}
+
+.electric-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s;
+}
+
+.electric-button:hover::before {
+  left: 100%;
+}
+
+.electric-button:hover {
+  background-size: 200% 200% !important;
+  box-shadow: 
+    0 0 30px rgba(255, 215, 0, 0.8),
+    0 0 50px rgba(207, 35, 35, 0.5) !important;
+  transform: translateY(-4px) scale(1.05) !important;
+}
+
+/* Título eléctrico */
+.electric-title {
+  background: linear-gradient(135deg, #CF2323, #FFD700, #00FF00);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 300% 300%;
+  animation: electricFlow 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+}
+
+/* Animaciones */
+@keyframes electricFlow {
+  0%, 100% { 
+    background-position: 0% 50%; 
+  }
+  50% { 
+    background-position: 100% 50%; 
+  }
+}
+
+@keyframes electricGlow {
+  0% { 
+    filter: drop-shadow(0 0 10px rgba(207, 35, 35, 0.5)) brightness(1);
+    transform: scale(1);
+  }
+  100% { 
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) brightness(1.2);
+    transform: scale(1.01);
+  }
+}
+
+@keyframes electricPulse {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes spark1 {
+  0% { 
+    opacity: 0;
+    transform: translateY(0px) rotate(0deg);
+  }
+  20% { 
+    opacity: 1;
+    transform: translateY(-10px) rotate(45deg);
+  }
+  80% { 
+    opacity: 1;
+    transform: translateY(-30px) rotate(-45deg);
+  }
+  100% { 
+    opacity: 0;
+    transform: translateY(-50px) rotate(0deg);
+  }
+}
+
+/* Hover effects mejorados para plan eléctrico */
+.electric-plan:hover::before {
+  animation-duration: 1.5s;
+  background-size: 200% 200%;
+}
+
+.electric-plan:hover::after {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.electric-plan:hover {
+  transform: translateY(-12px) scale(1.07);
+  transition: all 0.3s ease;
+}
+
+/* Keyframes para animación de spin (para loading) */
+@keyframes spin {
+  to { 
+    transform: rotate(360deg); 
+  }
+}
+
+/* Responsivo para móviles */
+@media (max-width: 768px) {
+  .electric-plan {
+    transform: none;
+    margin: 20px 0;
+  }
+  
+  .electric-plan::before {
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+  }
+  
+  .electric-plan::after {
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+  }
+  
+  .electric-badge {
+    font-size: 0.7rem;
+    padding: 6px 15px;
+    top: -10px;
+  }
+  
+  .electric-plan:hover {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+@media (max-width: 480px) {
+  .electric-badge {
+    font-size: 0.6rem;
+    padding: 4px 12px;
+  }
+  
+  .electric-button {
+    font-size: 0.9rem !important;
+    padding: 14px 28px !important;
+  }
+}
