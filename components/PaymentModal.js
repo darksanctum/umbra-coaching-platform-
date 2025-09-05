@@ -8,12 +8,17 @@ const PaymentModal = ({ plan, onClose }) => {
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState('');
 
-  // Calcular precio final
-  const finalPrice = appliedCoupon 
+  // ✅ PROTECCIÓN CONTRA NULL - Evita errores de build
+  if (!plan) {
+    return null;
+  }
+
+  // Calcular precio final - CON PROTECCIÓN
+  const finalPrice = appliedCoupon && plan
     ? appliedCoupon.discountType === 'percentage'
       ? plan.price * (1 - appliedCoupon.discountValue / 100)
       : plan.price - appliedCoupon.discountValue
-    : plan.price;
+    : plan?.price || 0;
 
   // Validar cupón
   const validateCoupon = async () => {
@@ -61,7 +66,10 @@ const PaymentModal = ({ plan, onClose }) => {
   };
 
   useEffect(() => {
-    if (!plan) return;
+    // ✅ PROTECCIÓN ADICIONAL
+    if (!plan || typeof window === 'undefined') {
+      return;
+    }
 
     const publicKey = process.env.NEXT_PUBLIC_MP_PUBLIC_KEY;
     if (!publicKey) {
@@ -179,8 +187,6 @@ const PaymentModal = ({ plan, onClose }) => {
       }
     };
   }, [plan, finalPrice]);
-
-  if (!plan) return null;
 
   return (
     <div style={{
