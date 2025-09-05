@@ -37,14 +37,26 @@ const PaymentModal = ({ plan, onClose }) => {
     }).format(price).replace('MX$', '$');
   };
 
-  // CUPONES SIMPLIFICADOS - Solo los más importantes
-  const quickCoupons = [
-    { code: 'BIENVENIDO50', discount: '50%', color: '#CF2323' },
-    { code: 'TRANSFORMACION30', discount: '30%', color: '#FF6B35' },
-    { code: 'AHORRA20', discount: '20%', color: '#4ECDC4' }
-  ];
+// CUPONES ESPECÍFICOS POR PLAN - Solo mostrar el código correcto
+  const getQuickCouponsForPlan = (planTitle) => {
+    const couponsByPlan = {
+      'Coaching Mensual': [
+        { code: 'BIENVENIDO50', discount: '50%', color: '#CF2323', description: 'Obtén exactamente el descuento mostrado' }
+      ],
+      'Transformación Acelerada': [
+        { code: 'TRANSFORMACION30', discount: '35%', color: '#FF6B35', description: 'Obtén exactamente el descuento mostrado' }
+      ],
+      'Metamorfosis Completa': [
+        { code: 'AHORRA20', discount: '25%', color: '#4ECDC4', description: 'Obtén exactamente el descuento mostrado' }
+      ]
+    };
+    
+    return couponsByPlan[planTitle] || [
+      { code: 'BIENVENIDO50', discount: '50%', color: '#CF2323' }
+    ];
+  };
 
-  const validateAndApplyCoupon = async (code) => {
+  const quickCoupons = getQuickCouponsForPlan(plan.title);
     if (!code.trim()) return;
 
     setCouponError('');
