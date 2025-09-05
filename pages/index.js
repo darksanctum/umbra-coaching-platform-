@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import PaymentModal from '../components/PaymentModal';
+import dynamic from 'next/dynamic';
+
+// ✅ CARGAR PaymentModal DINÁMICAMENTE para evitar errores de SSR
+const PaymentModal = dynamic(() => import('../components/PaymentModal'), {
+  ssr: false
+});
 
 const HomePage = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -311,57 +316,3 @@ const HomePage = () => {
                       <div className="price electric-title">$2,999</div>
                       <div className="price-term">MXN</div>
                     </div>
-                  </div>
-                  <ul className="features">
-                    <li>✓ Protocolo de nutrición y entrenamiento</li>
-                    <li>✓ Estrategia de suplementación</li>
-                    <li>✓ Acceso completo a la App</li>
-                    <li>✓ Soporte 1-a-1 por Telegram</li>
-                    <li><strong>✓ Videollamadas quincenales</strong></li>
-                  </ul>
-                  <div className="checkout-btn-container">
-                    <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button plan-button electric-button">⚡ Transformarme Ahora ⚡</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Plan Metamorfosis Completa */}
-              <div className="pricing-card reveal animated-card" style={{transitionDelay: '0.4s'}}>
-                <div className="card-content">
-                  <p className="tag">Plan de 30 Semanas</p>
-                  <h3 className="plan-name">Metamorfosis Completa</h3>
-                  <div className="price-container">
-                    <div className="price-normal">
-                      <div className="price">$4,299</div>
-                      <div className="price-term">MXN</div>
-                    </div>
-                  </div>
-                  <ul className="features">
-                    <li>✓ Todo lo del plan de 15 semanas</li>
-                    <li>✓ Planificación a largo plazo</li>
-                    <li>✓ Ajustes prioritarios del sistema</li>
-                    <li><strong>✓ La transformación más profunda</strong></li>
-                  </ul>
-                  <div className="checkout-btn-container">
-                    <button onClick={() => openModal({ title: 'Metamorfosis Completa', price: 4299 })} className="button plan-button">Evolucionar Completamente</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer id="contacto" className="footer">
-        <div className="container">
-          <p>&copy; 2025 Umbra Coaching // El Santuario es eterno.</p>
-          <p>Las comunicaciones se inician a través del nexo en <a href="https://t.me/kojicoachbot" target="_blank" rel="noopener noreferrer">Telegram</a>.</p>
-        </div>
-      </footer>
-
-      <PaymentModal plan={selectedPlan} onClose={closeModal} />
-    </>
-  );
-};
-
-export default HomePage;
