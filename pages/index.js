@@ -5,7 +5,6 @@ import PaymentModal from '../components/PaymentModal';
 const HomePage = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [activePromotions, setActivePromotions] = useState({
-    // Simulamos promociones activas para mostrar los códigos
     active: true
   });
 
@@ -17,7 +16,6 @@ const HomePage = () => {
     setSelectedPlan(null);
   };
 
-  // Cargar promociones activas al montar el componente
   const fetchActivePromotions = async () => {
     try {
       const response = await fetch('/api/active-promotions');
@@ -27,7 +25,6 @@ const HomePage = () => {
       }
     } catch (error) {
       console.error('Error cargando promociones:', error);
-      // Si hay error, mostramos las promociones por defecto
       setActivePromotions({ active: true });
     }
   };
@@ -160,9 +157,48 @@ const HomePage = () => {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Cormorant+Garamond:wght@400;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
+      
       <canvas id="particle-canvas"></canvas>
       <div className="cursor-dot"></div>
       <div className="cursor-outline"></div>
+
+      {/* SVG Filter para efecto eléctrico */}
+      <svg className="electric-filter" width="0" height="0">
+        <defs>
+          <filter id="electric-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feTurbulence
+              baseFrequency="0.9"
+              numOctaves="4"
+              result="noise"
+              seed="1">
+              <animate
+                attributeName="baseFrequency"
+                dur="3s"
+                values="0.9;1.2;0.9"
+                repeatCount="indefinite" />
+            </feTurbulence>
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="noise"
+              scale="8"
+              result="displacement" />
+            <feGaussianBlur
+              in="displacement"
+              stdDeviation="3"
+              result="glow" />
+            <feColorMatrix
+              in="glow"
+              type="matrix"
+              values="1 0.8 0 0 0
+                      0.8 1 0 0 0
+                      0 0.3 1 0 0
+                      0 0 0 1 0" />
+            <feComposite
+              operator="screen"
+              in2="displacement" />
+          </filter>
+        </defs>
+      </svg>
 
       <header className="header">
         <div className="container">
@@ -200,7 +236,7 @@ const HomePage = () => {
               <p className="section-subtitle">Planes diseñados para adaptarse a tu nivel de compromiso y objetivos.</p>
             </div>
 
-            {/* SECCIÓN DE DESCUENTOS MEJORADA */}
+            {/* SECCIÓN DE DESCUENTOS */}
             {Object.keys(activePromotions).length > 0 && (
               <div className="discount-info reveal">
                 <div className="discount-info-title">
@@ -263,15 +299,16 @@ const HomePage = () => {
                 </div>
               </div>
 
-              {/* Plan Transformación Acelerada */}
-              <div className="pricing-card reveal animated-card popular-plan" style={{transitionDelay: '0.2s'}}>
-                <div className="popular-badge">MÁS POPULAR</div>
+              {/* Plan Transformación Acelerada - CON EFECTO ELÉCTRICO */}
+              <div className="pricing-card reveal animated-card electric-plan" style={{transitionDelay: '0.2s'}}>
+                <div className="electric-badge">⚡ MÁS POPULAR ⚡</div>
+                <div className="electric-sparks"></div>
                 <div className="card-content">
                   <p className="tag">Plan de 15 Semanas</p>
-                  <h3 className="plan-name">Transformación Acelerada</h3>
+                  <h3 className="plan-name electric-title">Transformación Acelerada</h3>
                   <div className="price-container">
                     <div className="price-normal">
-                      <div className="price">$2,999</div>
+                      <div className="price electric-title">$2,999</div>
                       <div className="price-term">MXN</div>
                     </div>
                   </div>
@@ -283,7 +320,7 @@ const HomePage = () => {
                     <li><strong>✓ Videollamadas quincenales</strong></li>
                   </ul>
                   <div className="checkout-btn-container">
-                    <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button plan-button popular-button">Transformarme Ahora</button>
+                    <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button plan-button electric-button">⚡ Transformarme Ahora ⚡</button>
                   </div>
                 </div>
               </div>
