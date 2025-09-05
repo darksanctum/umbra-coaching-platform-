@@ -4,7 +4,10 @@ import PaymentModal from '../components/PaymentModal';
 
 const HomePage = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [activePromotions, setActivePromotions] = useState({});
+  const [activePromotions, setActivePromotions] = useState({
+    // Simulamos promociones activas para mostrar los códigos
+    active: true
+  });
 
   const openModal = (plan) => {
     setSelectedPlan(plan);
@@ -24,6 +27,8 @@ const HomePage = () => {
       }
     } catch (error) {
       console.error('Error cargando promociones:', error);
+      // Si hay error, mostramos las promociones por defecto
+      setActivePromotions({ active: true });
     }
   };
 
@@ -149,10 +154,11 @@ const HomePage = () => {
   return (
     <>
       <Head>
-        <title>Umbra Coaching</title>
+        <title>Umbra Coaching - Transforma Tu Físico</title>
+        <meta name="description" content="Planes de entrenamiento y nutrición personalizados para resultados reales. Coaching profesional con hasta 50% de descuento." />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Cormorant+Garamond:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Cormorant+Garamond:wght@400;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
       <canvas id="particle-canvas"></canvas>
       <div className="cursor-dot"></div>
@@ -172,17 +178,17 @@ const HomePage = () => {
       <main>
         <section id="hero" className="hero">
           <div className="container">
-            <h1 className="hero-title glitch" data-text="TRANSFORMA TU FÍSICO">TRANSFORMA TU FÍSICO</h1>
+            <h1 className="hero-title glitch reveal" data-text="TRANSFORMA TU FÍSICO">TRANSFORMA TU FÍSICO</h1>
             <p className="hero-subtitle reveal">Planes de entrenamiento y nutrición personalizados para resultados reales. Deja de adivinar y empieza a construir la mejor versión de ti.</p>
-            <a href="#planes" className="button reveal" style={{transitionDelay: '0.2s'}}>Ver Planes</a>
+            <a href="#planes" className="button reveal cta-button">Ver Planes Disponibles</a>
           </div>
         </section>
 
         <section id="filosofia" className="section">
           <div className="container">
             <div className="section-header reveal">
-              <h2 className="section-title">El Método Umbra Coaching</h2>
-              <p className="section-subtitle">Creemos en un enfoque inteligente y basado en la ciencia. Cada plan de entrenamiento y nutrición es una herramienta de precisión, diseñada para optimizar tu progreso y eliminar las conjeturas. Dejamos atrás las rutinas genéricas para enfocarnos en lo que realmente funciona para ti.</p>
+              <h2 className="section-title animated-title">El Método Umbra Coaching</h2>
+              <p className="section-subtitle">Creemos en un enfoque inteligente y basado en la ciencia. Cada plan de entrenamiento y nutrición es una herramienta de precisión, diseñada para optimizar tu progreso y eliminar las conjeturas.</p>
             </div>
           </div>
         </section>
@@ -190,11 +196,11 @@ const HomePage = () => {
         <section id="planes" className="section">
           <div className="container">
             <div className="section-header reveal">
-              <h2 className="section-title">Elige Tu Plan</h2>
-              <p className="section-subtitle">Planes diseñados para adaptarse a tu nivel de compromiso y tus objetivos. Ya sea que busques perder grasa, ganar músculo o mejorar tu rendimiento, aquí comienza tu transformación.</p>
+              <h2 className="section-title animated-title">Elige Tu Plan</h2>
+              <p className="section-subtitle">Planes diseñados para adaptarse a tu nivel de compromiso y objetivos.</p>
             </div>
 
-            {/* AQUÍ VA TU CÓDIGO DE DESCUENTOS */}
+            {/* SECCIÓN DE DESCUENTOS MEJORADA */}
             {Object.keys(activePromotions).length > 0 && (
               <div className="discount-info reveal">
                 <div className="discount-info-title">
@@ -203,133 +209,104 @@ const HomePage = () => {
                 <div className="discount-info-text">
                   Es súper fácil: Cada plan tiene su código específico
                 </div>
-                {/* Mostrar códigos específicos por plan */}
-                <div style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  gap: '10px', 
-                  margin: '20px 0' 
-                }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    gap: '10px', 
-                    flexWrap: 'wrap' 
-                  }}>
-                    <span style={{ fontSize: '0.9rem', color: '#A1A1AA' }}>Coaching Mensual:</span>
-                    <code style={{ 
-                      background: '#CF2323', 
-                      color: 'white', 
-                      padding: '4px 8px', 
-                      borderRadius: '6px', 
-                      fontSize: '0.85rem', 
-                      fontWeight: 'bold' 
-                    }}>
-                      BIENVENIDO50
-                    </code>
-                    <span style={{ fontSize: '0.8rem', color: '#4ECDC4' }}>(50% OFF)</span>
+                
+                <div className="discount-codes-container">
+                  <div className="discount-code-row">
+                    <span className="plan-name-label">Coaching Mensual:</span>
+                    <code className="discount-code">BIENVENIDO50</code>
+                    <span className="discount-percentage">(50% OFF)</span>
                   </div>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    gap: '10px', 
-                    flexWrap: 'wrap' 
-                  }}>
-                    <span style={{ fontSize: '0.9rem', color: '#A1A1AA' }}>Transformación Acelerada:</span>
-                    <code style={{ 
-                      background: '#FF6B35', 
-                      color: 'white', 
-                      padding: '4px 8px', 
-                      borderRadius: '6px', 
-                      fontSize: '0.85rem', 
-                      fontWeight: 'bold' 
-                    }}>
-                      TRANSFORMACION30
-                    </code>
-                    <span style={{ fontSize: '0.8rem', color: '#4ECDC4' }}>(35% OFF)</span>
+                  
+                  <div className="discount-code-row">
+                    <span className="plan-name-label">Transformación Acelerada:</span>
+                    <code className="discount-code">TRANSFORMACION30</code>
+                    <span className="discount-percentage">(35% OFF)</span>
                   </div>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    gap: '10px', 
-                    flexWrap: 'wrap' 
-                  }}>
-                    <span style={{ fontSize: '0.9rem', color: '#A1A1AA' }}>Metamorfosis Completa:</span>
-                    <code style={{ 
-                      background: '#4ECDC4', 
-                      color: 'white', 
-                      padding: '4px 8px', 
-                      borderRadius: '6px', 
-                      fontSize: '0.85rem', 
-                      fontWeight: 'bold' 
-                    }}>
-                      AHORRA20
-                    </code>
-                    <span style={{ fontSize: '0.8rem', color: '#4ECDC4' }}>(25% OFF)</span>
+                  
+                  <div className="discount-code-row">
+                    <span className="plan-name-label">Metamorfosis Completa:</span>
+                    <code className="discount-code">AHORRA20</code>
+                    <span className="discount-percentage">(25% OFF)</span>
                   </div>
                 </div>
+                
                 <div className="discount-info-sub">
-                  Los códigos dan exactamente el descuento mostrado en cada plan
+                  🎯 Los códigos dan exactamente el descuento mostrado en cada plan
                 </div>
               </div>
             )}
 
             <div className="pricing-grid">
               {/* Plan Coaching Mensual */}
-              <div className="pricing-card reveal">
+              <div className="pricing-card reveal animated-card">
                 <div className="card-content">
                   <p className="tag">Acceso por un Mes</p>
                   <h3 className="plan-name">Coaching Mensual</h3>
-                  <p className="price">$1,199 <span className="price-term">MXN/único</span></p>
+                  <div className="price-container">
+                    <div className="price-normal">
+                      <div className="price">$1,199</div>
+                      <div className="price-term">MXN</div>
+                    </div>
+                  </div>
                   <ul className="features">
-                    <li>Acceso completo a la plataforma Umbra</li>
-                    <li>Supervisión y seguimiento personalizado</li>
-                    <li>Soporte directo vía Telegram</li>
-                    <li>Análisis de progreso mensual</li>
-                    <li>Ajustes de rutina en tiempo real</li>
-                    <li>Comunidad exclusiva de miembros</li>
-                    <li><b>Válido por 30 días</b></li>
+                    <li>✓ Acceso completo a la plataforma Umbra</li>
+                    <li>✓ Supervisión y seguimiento personalizado</li>
+                    <li>✓ Soporte directo vía Telegram</li>
+                    <li>✓ Análisis de progreso mensual</li>
+                    <li>✓ Ajustes de rutina en tiempo real</li>
+                    <li>✓ Comunidad exclusiva de miembros</li>
+                    <li><strong>✓ Válido por 30 días</strong></li>
                   </ul>
                   <div className="checkout-btn-container">
-                    <button onClick={() => openModal({ title: 'Coaching Mensual', price: 1199 })} className="button">Forjar Pacto</button>
+                    <button onClick={() => openModal({ title: 'Coaching Mensual', price: 1199 })} className="button plan-button">Comenzar Ahora</button>
                   </div>
                 </div>
               </div>
 
-              <div className="pricing-card reveal" style={{transitionDelay: '0.2s'}}>
+              {/* Plan Transformación Acelerada */}
+              <div className="pricing-card reveal animated-card popular-plan" style={{transitionDelay: '0.2s'}}>
+                <div className="popular-badge">MÁS POPULAR</div>
                 <div className="card-content">
                   <p className="tag">Plan de 15 Semanas</p>
                   <h3 className="plan-name">Transformación Acelerada</h3>
-                  <p className="price">$2999 <span className="price-term">MXN</span></p>
+                  <div className="price-container">
+                    <div className="price-normal">
+                      <div className="price">$2,999</div>
+                      <div className="price-term">MXN</div>
+                    </div>
+                  </div>
                   <ul className="features">
-                    <li>Protocolo de nutrición y entrenamiento</li>
-                    <li>Estrategia de suplementación</li>
-                    <li>Acceso completo a la App</li>
-                    <li>Soporte 1-a-1 por Telegram</li>
-                    <li><b>Sincronización quincenal por videollamada</b></li>
+                    <li>✓ Protocolo de nutrición y entrenamiento</li>
+                    <li>✓ Estrategia de suplementación</li>
+                    <li>✓ Acceso completo a la App</li>
+                    <li>✓ Soporte 1-a-1 por Telegram</li>
+                    <li><strong>✓ Videollamadas quincenales</strong></li>
                   </ul>
                   <div className="checkout-btn-container">
-                    <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button">Forjar Pacto</button>
+                    <button onClick={() => openModal({ title: 'Transformación Acelerada', price: 2999 })} className="button plan-button popular-button">Transformarme Ahora</button>
                   </div>
                 </div>
               </div>
 
-              <div className="pricing-card reveal" style={{transitionDelay: '0.4s'}}>
+              {/* Plan Metamorfosis Completa */}
+              <div className="pricing-card reveal animated-card" style={{transitionDelay: '0.4s'}}>
                 <div className="card-content">
                   <p className="tag">Plan de 30 Semanas</p>
                   <h3 className="plan-name">Metamorfosis Completa</h3>
-                  <p className="price">$4299 <span className="price-term">MXN</span></p>
+                  <div className="price-container">
+                    <div className="price-normal">
+                      <div className="price">$4,299</div>
+                      <div className="price-term">MXN</div>
+                    </div>
+                  </div>
                   <ul className="features">
-                    <li>Todos los elementos del plan de 15 semanas</li>
-                    <li>Planificación a largo plazo</li>
-                    <li>Ajustes prioritarios del sistema</li>
-                    <li><b>La transformación más profunda</b></li>
+                    <li>✓ Todo lo del plan de 15 semanas</li>
+                    <li>✓ Planificación a largo plazo</li>
+                    <li>✓ Ajustes prioritarios del sistema</li>
+                    <li><strong>✓ La transformación más profunda</strong></li>
                   </ul>
                   <div className="checkout-btn-container">
-                    <button onClick={() => openModal({ title: 'Metamorfosis Completa', price: 4299 })} className="button">Forjar Pacto</button>
+                    <button onClick={() => openModal({ title: 'Metamorfosis Completa', price: 4299 })} className="button plan-button">Evolucionar Completamente</button>
                   </div>
                 </div>
               </div>
@@ -341,7 +318,7 @@ const HomePage = () => {
       <footer id="contacto" className="footer">
         <div className="container">
           <p>&copy; 2025 Umbra Coaching // El Santuario es eterno.</p>
-          <p>Las comunicaciones se inician a través del nexo en <a href="https://t.me/kojicoachbot" target="_blank">Telegram</a>.</p>
+          <p>Las comunicaciones se inician a través del nexo en <a href="https://t.me/kojicoachbot" target="_blank" rel="noopener noreferrer">Telegram</a>.</p>
         </div>
       </footer>
 
