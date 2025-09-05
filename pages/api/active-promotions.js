@@ -7,68 +7,118 @@ export default async function handler(req, res) {
   try {
     const now = new Date();
     
-    // Promociones activas - Se pueden configurar dinámicamente
-    const promotions = {
-      'Coaching Mensual': {
-        type: 'percentage',
-        value: 50,
-        startDate: now.toISOString(),
-        endDate: new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString(), // 7 días
-        active: true,
-        title: 'Oferta de Bienvenida',
-        description: '50% de descuento en tu primer mes'
-      },
+    // Promociones activas - puedes modificar estas fechas y descuentos
+    const activePromotions = {
+      // Promoción para el plan más popular
       'Transformación Acelerada': {
-        type: 'percentage',
-        value: 35,
-        startDate: now.toISOString(),
-        endDate: new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString(),
-        active: true,
-        title: 'Transformación Flash',
-        description: '35% de descuento por tiempo limitado'
+        hasPromotion: true,
+        originalPrice: 2999,
+        discountedPrice: 1499,
+        discountPercentage: 50,
+        promotionText: '¡50% DE DESCUENTO!',
+        validFrom: '2025-01-01T00:00:00Z',
+        validUntil: '2025-01-31T23:59:59Z',
+        description: 'Oferta especial de año nuevo'
       },
+      
+      // Promoción para coaching mensual
+      'Coaching Mensual': {
+        hasPromotion: true,
+        originalPrice: 1199,
+        discountedPrice: 899,
+        discountPercentage: 25,
+        promotionText: '¡25% DE DESCUENTO!',
+        validFrom: '2025-01-01T00:00:00Z',
+        validUntil: '2025-01-31T23:59:59Z',
+        description: 'Descuento especial para nuevos clientes'
+      },
+      
+      // Sin promoción para el plan premium (opcional)
       'Metamorfosis Completa': {
-        type: 'percentage',
-        value: 25,
-        startDate: now.toISOString(),
-        endDate: new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString(),
-        active: true,
-        title: 'Metamorfosis Premium',
-        description: '25% de descuento en el plan más completo'
+        hasPromotion: false,
+        originalPrice: 4299,
+        discountedPrice: 4299,
+        discountPercentage: 0,
+        promotionText: null,
+        validFrom: null,
+        validUntil: null,
+        description: 'Precio regular'
       }
     };
 
-    // Filtrar solo promociones activas y vigentes
-    const activePromotions = {};
-    Object.keys(promotions).forEach(planName => {
-      const promo = promotions[planName];
-      const promoStart = new Date(promo.startDate);
-      const promoEnd = new Date(promo.endDate);
+    // Verificar que las promociones estén dentro del rango de fechas válidas
+    const validPromotions = {};
+    
+    Object.keys(activePromotions).forEach(planName => {
+      const promo = activePromotions[planName];
       
-      if (promo.active && now >= promoStart && now <= promoEnd) {
-        activePromotions[planName] = promo;
+      if (!promo.hasPromotion) {
+        validPromotions[planName] = promo;
+        return;
+      }
+      
+      const validFrom = new Date(promo.validFrom);
+      const validUntil = new Date(promo.validUntil);
+      
+      // Verificar si la promoción está activa
+      if (now >= validFrom && now <= validUntil) {
+        validPromotions[planName] = promo;
+      } else {
+        // Promoción expirada o no activa
+        validPromotions[planName] = {
+          hasPromotion: false,
+          originalPrice: promo.originalPrice,
+          discountedPrice: promo.originalPrice,
+          discountPercentage: 0,
+          promotionText: null,
+          validFrom: null,
+          validUntil: null,
+          description: 'Promoción expirada'
+        };
       }
     });
 
-    // Información del countdown
-    const countdownInfo = {
-      timeLeft: 7 * 24 * 60 * 60 * 1000, // 7 días en milisegundos
-      endDate: new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)).toISOString()
-    };
-
+    // Respuesta exitosa
     res.status(200).json({
-      promotions: activePromotions,
-      countdown: countdownInfo,
-      hasActivePromotions: Object.keys(activePromotions).length > 0
+      success: true,
+      promotions: validPromotions,
+      timestamp: now.toISOString(),
+      message: 'Promociones activas obtenidas correctamente'
     });
 
   } catch (error) {
-    console.error('Error in active-promotions:', error);
-    res.status(500).json({ 
-      error: 'Internal server error',
-      promotions: {},
-      countdown: null,
-      hasActivePromotions: false
+    console.error('Error fetching active promotions:', error);
+    
+    // En caso de error, devolver promociones por defecto
+    res.status(200).json({
+      success: false,
+      promotions: {
+        'Transformación Acelerada': {
+          hasPromotion: true,
+          originalPrice: 2999,
+          discountedPrice: 1499,
+          discountPercentage: 50,
+          promotionText: '¡50% DE DESCUENTO!',
+          description: 'Promoción por defecto'
+        },
+        'Coaching Mensual': {
+          hasPromotion: false,
+          originalPrice: 1199,
+          discountedPrice: 1199,
+          discountPercentage: 0,
+          promotionText: null,
+          description: 'Sin promoción'
+        },
+        'Metamorfosis Completa': {
+          hasPromotion: false,
+          originalPrice: 4299,
+          discountedPrice: 4299,
+          discountPercentage: 0,
+          promotionText: null,
+          description: 'Sin promoción'
+        }
+      },
+      error: 'Error interno, usando promociones por defecto'
     });
   }
 }
