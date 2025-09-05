@@ -448,7 +448,7 @@ body:hover .cursor-outline {
     margin-top: auto;
 }
 
-/* --- Información de Descuentos SÚPER MEJORADA --- */
+/* --- Información de Descuentos --- */
 .discount-info {
     background: linear-gradient(145deg, 
         rgba(207, 35, 35, 0.15), 
@@ -485,6 +485,8 @@ body:hover .cursor-outline {
     animation: gradientShift 3s ease-in-out infinite;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: xor;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
     z-index: -1;
 }
 
@@ -604,693 +606,115 @@ body:hover .cursor-outline {
     border: 1px solid rgba(76, 175, 79, 0.3);
 }
 
-/* --- Footer --- */
-.footer {
-    padding: 60px 0;
-    text-align: center;
-    background: linear-gradient(135deg, var(--color-void), var(--color-abyss));
-    border-top: 1px solid var(--color-border);
-    position: relative;
+/* ⚡ EFECTO ELÉCTRICO PARA PLAN DE 15 SEMANAS ⚡ */
+
+/* Filtro SVG oculto */
+.electric-filter {
+    position: absolute;
+    width: 0;
+    height: 0;
+    pointer-events: none;
 }
 
-.footer::before {
+/* Contenedor principal del efecto eléctrico */
+.electric-plan {
+    position: relative;
+    z-index: 1;
+    transform: scale(1.05);
+}
+
+/* Border eléctrico principal */
+.electric-plan::before {
     content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: linear-gradient(45deg, 
+        #CF2323 0%, 
+        #FF6B35 25%, 
+        #FFD700 50%, 
+        #00FF00 75%, 
+        #CF2323 100%
+    );
+    background-size: 400% 400%;
+    border-radius: 20px;
+    z-index: -1;
+    animation: electricFlow 3s ease-in-out infinite, electricGlow 2s ease-in-out infinite alternate;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    padding: 3px;
+    filter: drop-shadow(0 0 10px rgba(207, 35, 35, 0.5));
+}
+
+/* Efecto de glow exterior */
+.electric-plan::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background: radial-gradient(circle, rgba(207, 35, 35, 0.3) 0%, transparent 70%);
+    border-radius: 24px;
+    z-index: -2;
+    animation: electricPulse 4s ease-in-out infinite;
+    filter: blur(8px);
+}
+
+/* Chispas eléctricas */
+.electric-plan .electric-sparks {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--color-ember), transparent);
-}
-
-.footer p {
-    color: var(--color-smoke);
-    font-family: var(--font-code);
-    font-size: 0.9rem;
-    margin-bottom: 10px;
-}
-
-.footer a {
-    color: var(--color-ember);
-    text-decoration: none;
-    transition: var(--transition-normal);
-}
-
-.footer a:hover {
-    color: var(--color-soul);
-    text-shadow: 0 0 5px var(--color-ember);
-}
-
-/* --- Responsivo Mejorado --- */
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
-    }
-    
-    .container {
-        padding: 0 20px;
-    }
-    
-    .section {
-        padding: 100px 0;
-    }
-    
-    .pricing-grid {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-    
-    .pricing-card {
-        margin: 0 10px;
-    }
-    
-    .discount-info {
-        padding: 2rem 1.5rem;
-        margin: 2rem 0 3rem 0;
-    }
-    
-    .discount-code-row {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .plan-name-label {
-        min-width: auto;
-        text-align: center;
-        font-size: 0.9rem;
-    }
-    
-    .discount-code {
-        font-size: 0.8rem;
-        padding: 6px 12px;
-    }
-    
-    .hero-title {
-        font-size: clamp(2.5rem, 8vw, 4rem);
-    }
-    
-    .cursor-dot, .cursor-outline {
-        display: none;
-    }
-    
-    body {
-        cursor: auto;
-    }
-}
-
-@media (max-width: 480px) {
-    .discount-info {
-        padding: 1.5rem 1rem;
-    }
-    
-    .discount-info-title {
-        font-size: 1.3rem;
-    }
-    
-    .discount-info-text {
-        font-size: 1rem;
-    }
-    
-    .pricing-card .card-content {
-        padding: 30px 20px;
-    }
-}
-
-/* --- Animaciones Adicionales --- */
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-}
-
-.animated-title {
-    animation: pulse 3s ease-in-out infinite;
-}
-
-.animated-card {
-    transition: var(--transition-slow);
-}
-
-.animated-card:hover {
-    animation: none;
-}
-
-/* --- Estados de Carga --- */
-.loading {
-    opacity: 0.7;
+    bottom: 0;
     pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+    border-radius: 16px;
 }
 
-.loading::after {
+.electric-plan .electric-sparks::before,
+.electric-plan .electric-sparks::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
+    width: 2px;
     height: 20px;
-    margin: -10px 0 0 -10px;
-    border: 2px solid var(--color-ember);
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
+    background: linear-gradient(0deg, transparent, #FFD700, transparent);
+    animation: spark1 3s linear infinite;
+    filter: drop-shadow(0 0 6px #FFD700);
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-/* Agregar estos estilos al final de globals.css */
-
-/* --- Plan Popular --- */
-.popular-plan {
-    position: relative;
-    transform: scale(1.05);
-    border: 2px solid var(--color-ember);
+.electric-plan .electric-sparks::before {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
 }
 
-.popular-badge {
+.electric-plan .electric-sparks::after {
+    bottom: 20%;
+    right: 15%;
+    animation-delay: 1.5s;
+    background: linear-gradient(0deg, transparent, #00FF00, transparent);
+    filter: drop-shadow(0 0 6px #00FF00);
+}
+
+/* Badge eléctrico */
+.electric-badge {
     position: absolute;
     top: -15px;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, var(--color-ember), #FF6B35);
-    color: white;
+    background: linear-gradient(135deg, #CF2323, #FFD700, #00FF00);
+    background-size: 300% 300%;
+    color: #000;
     padding: 8px 20px;
     border-radius: 20px;
     font-family: var(--font-code);
     font-size: 0.8rem;
     font-weight: bold;
     letter-spacing: 1px;
-    z-index: 10;
-    box-shadow: 0 4px 15px rgba(207, 35, 35, 0.4);
-}
-
-.popular-plan .card-content {
-    border: 1px solid var(--color-ember);
-}
-
-.popular-button {
-    background: var(--color-ember);
-    color: var(--color-void);
-    box-shadow: 
-        0 0 20px var(--color-ember),
-        0 0 40px rgba(207, 35, 35, 0.3);
-}
-
-.popular-button:hover {
-    background: var(--color-soul);
-    color: var(--color-ember);
-    box-shadow: 
-        0 0 30px var(--color-soul),
-        0 0 50px rgba(229, 231, 235, 0.3);
-}
-
-/* --- Contador de Tiempo (para futuro uso) --- */
-.countdown-timer {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
-}
-
-.countdown-item {
-    text-align: center;
-    background: rgba(17, 17, 17, 0.8);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid var(--color-ember);
-}
-
-.countdown-number {
-    font-family: var(--font-sigil);
-    font-size: 2rem;
-    color: var(--color-ember);
-    display: block;
-}
-
-.countdown-label {
-    font-family: var(--font-code);
-    font-size: 0.8rem;
-    color: var(--color-smoke);
-    text-transform: uppercase;
-}
-
-/* --- Efectos de Hover Mejorados --- */
-.plan-button {
-    position: relative;
-    overflow: hidden;
-}
-
-.plan-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
-}
-
-.plan-button:hover::before {
-    left: 100%;
-}
-
-/* --- Precio con Descuento (para futuro uso) --- */
-.price-container {
-    margin: 20px 0;
-}
-
-.price-with-discount {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-
-.price-original {
-    text-decoration: line-through;
-    color: var(--color-smoke);
-    font-size: 1.5rem;
-    opacity: 0.7;
-}
-
-.price-discount {
-    background: linear-gradient(135deg, #4CAF50, #2196F3);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.discount-badge {
-    background: linear-gradient(135deg, #4CAF50, #2196F3);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-left: 10px;
-}
-
-/* --- Animaciones de Entrada --- */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes fadeInRight {
-    from {
-        opacity: 0;
-        transform: translateX(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out;
-}
-
-.animate-fade-in-left {
-    animation: fadeInLeft 0.8s ease-out;
-}
-
-.animate-fade-in-right {
-    animation: fadeInRight 0.8s ease-out;
-}
-
-/* --- Responsive Mejorado para Móviles --- */
-@media (max-width: 768px) {
-    .popular-plan {
-        transform: none;
-        margin: 20px 0;
-    }
-    
-    .popular-badge {
-        top: -10px;
-        font-size: 0.7rem;
-        padding: 6px 15px;
-    }
-    
-    .countdown-timer {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    
-    .countdown-item {
-        flex: 1;
-        min-width: 80px;
-        padding: 10px;
-    }
-    
-    .countdown-number {
-        font-size: 1.5rem;
-    }
-    
-    .discount-codes-container {
-        gap: 15px;
-    }
-    
-    .discount-code-row {
-        padding: 12px;
-    }
-}
-
-/* --- Estados de Carga para Botones --- */
-.button.loading {
-    position: relative;
-    color: transparent;
-}
-
-.button.loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    margin: -10px 0 0 -10px;
-    border: 2px solid currentColor;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spin 1s linear infinite;
-}
-
-/* --- Efectos de Partículas Adicionales --- */
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(207, 35, 35, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.hero .container {
-    position: relative;
-    z-index: 2;
-}
-/* ⚡ EFECTO ELÉCTRICO PARA PLAN DE 15 SEMANAS ⚡ */
-
-/* Filtro SVG oculto */
-.electric-filter {
-  position: absolute;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-/* Contenedor principal del efecto eléctrico */
-.electric-plan {
-  position: relative;
-  z-index: 1;
-  transform: scale(1.05);
-}
-
-/* Border eléctrico principal */
-.electric-plan::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  background: linear-gradient(45deg, 
-    #CF2323 0%, 
-    #FF6B35 25%, 
-    #FFD700 50%, 
-    #00FF00 75%, 
-    #CF2323 100%
-  );
-  background-size: 400% 400%;
-  border-radius: 20px;
-  z-index: -1;
-  animation: electricFlow 3s ease-in-out infinite, electricGlow 2s ease-in-out infinite alternate;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: xor;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  padding: 3px;
-  filter: drop-shadow(0 0 10px rgba(207, 35, 35, 0.5));
-}
-
-/* Efecto de glow exterior */
-.electric-plan::after {
-  content: '';
-  position: absolute;
-  top: -8px;
-  left: -8px;
-  right: -8px;
-  bottom: -8px;
-  background: radial-gradient(circle, rgba(207, 35, 35, 0.3) 0%, transparent 70%);
-  border-radius: 24px;
-  z-index: -2;
-  animation: electricPulse 4s ease-in-out infinite;
-  filter: blur(8px);
-}
-
-/* Chispas eléctricas */
-.electric-plan .electric-sparks {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 2;
-  overflow: hidden;
-  border-radius: 16px;
-}
-
-.electric-plan .electric-sparks::before,
-.electric-plan .electric-sparks::after {
-  content: '';
-  position: absolute;
-  width: 2px;
-  height: 20px;
-  background: linear-gradient(0deg, transparent, #FFD700, transparent);
-  animation: spark1 3s linear infinite;
-  filter: drop-shadow(0 0 6px #FFD700);
-}
-
-.electric-plan .electric-sparks::before {
-  top: 20%;
-  left: 10%;
-  animation-delay: 0s;
-}
-
-.electric-plan .electric-sparks::after {
-  bottom: 20%;
-  right: 15%;
-  animation-delay: 1.5s;
-  background: linear-gradient(0deg, transparent, #00FF00, transparent);
-  filter: drop-shadow(0 0 6px #00FF00);
-}
-
-/* Badge eléctrico */
-.electric-badge {
-  position: absolute;
-  top: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(135deg, #CF2323, #FFD700, #00FF00);
-  background-size: 300% 300%;
-  color: #000;
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-family: var(--font-code);
-  font-size: 0.8rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  z-index: 10;
-  box-shadow: 
-    0 0 20px rgba(255, 215, 0, 0.5),
-    0 4px 15px rgba(0, 0, 0, 0.3);
-  animation: electricFlow 2s ease-in-out infinite;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-}
-
-/* Botón eléctrico */
-.electric-button {
-  background: linear-gradient(135deg, #CF2323, #FFD700, #00FF00) !important;
-  background-size: 300% 300% !important;
-  color: #000 !important;
-  font-weight: bold !important;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8) !important;
-  border: 2px solid transparent !important;
-  position: relative !important;
-  overflow: hidden !important;
-  animation: electricFlow 3s ease-in-out infinite !important;
-}
-
-.electric-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.5s;
-}
-
-.electric-button:hover::before {
-  left: 100%;
-}
-
-.electric-button:hover {
-  background-size: 200% 200% !important;
-  box-shadow: 
-    0 0 30px rgba(255, 215, 0, 0.8),
-    0 0 50px rgba(207, 35, 35, 0.5) !important;
-  transform: translateY(-4px) scale(1.05) !important;
-}
-
-/* Título eléctrico */
-.electric-title {
-  background: linear-gradient(135deg, #CF2323, #FFD700, #00FF00);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 300% 300%;
-  animation: electricFlow 4s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
-}
-
-/* Animaciones */
-@keyframes electricFlow {
-  0%, 100% { 
-    background-position: 0% 50%; 
-  }
-  50% { 
-    background-position: 100% 50%; 
-  }
-}
-
-@keyframes electricGlow {
-  0% { 
-    filter: drop-shadow(0 0 10px rgba(207, 35, 35, 0.5)) brightness(1);
-    transform: scale(1);
-  }
-  100% { 
-    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) brightness(1.2);
-    transform: scale(1.01);
-  }
-}
-
-@keyframes electricPulse {
-  0%, 100% { 
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% { 
-    opacity: 0.6;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes spark1 {
-  0% { 
-    opacity: 0;
-    transform: translateY(0px) rotate(0deg);
-  }
-  20% { 
-    opacity: 1;
-    transform: translateY(-10px) rotate(45deg);
-  }
-  80% { 
-    opacity: 1;
-    transform: translateY(-30px) rotate(-45deg);
-  }
-  100% { 
-    opacity: 0;
-    transform: translateY(-50px) rotate(0deg);
-  }
-}
-
-/* Hover effects mejorados para plan eléctrico */
-.electric-plan:hover::before {
-  animation-duration: 1.5s;
-  background-size: 200% 200%;
-}
-
-.electric-plan:hover::after {
-  opacity: 0.8;
-  transform: scale(1.1);
-}
-
-.electric-plan:hover {
-  transform: translateY(-12px) scale(1.07);
-  transition: all 0.3s ease;
-}
-
-/* Keyframes para animación de spin (para loading) */
-@keyframes spin {
-  to { 
-    transform: rotate(360deg); 
-  }
-}
-
-/* Responsivo para móviles */
-@media (max-width: 768px) {
-  .electric-plan {
-    transform: none;
-    margin: 20px 0;
-  }
-  
-  .electric-plan::before {
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-  }
-  
-  .electric-plan::after {
-    top: -6px;
-    left: -6px;
-    right: -6px;
-    bottom: -6px;
-  }
-  
-  .electric-badge {
-    font-size: 0.7rem;
-    padding: 6px 15px;
-    top: -10px;
-  }
-  
-  .electric-plan:hover {
-    transform: translateY(-8px) scale(1.02);
-  }
-}
-
-@media (max-width: 480px) {
-  .electric-badge {
-    font-size: 0.6rem;
-    padding: 4px 12px;
-  }
-  
-  .electric-button {
-    font-size: 0.9rem !important;
-    padding: 14px 28px !important;
-  }
-}
