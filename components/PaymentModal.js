@@ -37,7 +37,7 @@ const PaymentModal = ({ plan, onClose }) => {
     }).format(price).replace('MX$', '$');
   };
 
-// CUPONES ESPECÍFICOS POR PLAN - Solo mostrar el código correcto
+  // CUPONES ESPECÍFICOS POR PLAN - Solo mostrar el código correcto
   const getQuickCouponsForPlan = (planTitle) => {
     const couponsByPlan = {
       'Coaching Mensual': [
@@ -56,7 +56,9 @@ const PaymentModal = ({ plan, onClose }) => {
     ];
   };
 
-  const quickCoupons = getQuickCouponsForPlan(plan.title);
+  const quickCoupons = getQuickCouponsForPlan(plan?.title);
+
+  const validateAndApplyCoupon = async (code) => {
     if (!code.trim()) return;
 
     setCouponError('');
@@ -271,23 +273,29 @@ const PaymentModal = ({ plan, onClose }) => {
         </div>
 
         <div className="modal-content">
-          {/* Sistema de Cupones SÚPER SIMPLIFICADO */}
+          {/* Sistema de Cupones SÚPER SIMPLIFICADO Y ESPECÍFICO */}
           <div className="coupon-section">
             <h4 className="coupon-title">
-              🎁 ¿Tienes un código de descuento?
+              🎁 ¿Tienes el código de descuento?
             </h4>
             
-            {/* Cupones rápidos MUY VISIBLES */}
+            {/* Mensaje específico para el plan */}
+            <div className="plan-specific-message">
+              Para <strong>{plan.title}</strong>, usa este código:
+            </div>
+            
+            {/* Cupón específico para este plan */}
             <div className="quick-coupons">
               {quickCoupons.map((coupon, index) => (
                 <button
                   key={index}
                   onClick={() => applyCouponCode(coupon.code)}
-                  className="coupon-button"
+                  className="coupon-button featured-coupon"
                   style={{ backgroundColor: coupon.color }}
                 >
                   <div className="coupon-discount">{coupon.discount} OFF</div>
                   <div className="coupon-code">{coupon.code}</div>
+                  <div className="coupon-description">{coupon.description}</div>
                 </button>
               ))}
             </div>
@@ -296,7 +304,7 @@ const PaymentModal = ({ plan, onClose }) => {
             <div className="manual-coupon">
               <input
                 type="text"
-                placeholder="O escribe tu código aquí..."
+                placeholder={`Escribe aquí tu código (ej: ${quickCoupons[0]?.code || 'BIENVENIDO50'})`}
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 className="coupon-input"
@@ -334,10 +342,10 @@ const PaymentModal = ({ plan, onClose }) => {
               </div>
             )}
 
-            {/* Mensaje de ayuda */}
+            {/* Mensaje de ayuda específico */}
             {!couponApplied && (
               <div className="coupon-tip">
-                💡 <strong>Tip:</strong> Usa <code>BIENVENIDO50</code> para 50% de descuento
+                💡 <strong>Tip:</strong> El código <code>{quickCoupons[0]?.code || 'BIENVENIDO50'}</code> te da exactamente el {quickCoupons[0]?.discount || '50%'} de descuento mostrado arriba
               </div>
             )}
           </div>
@@ -533,6 +541,17 @@ const PaymentModal = ({ plan, onClose }) => {
           gap: 8px;
         }
 
+        .plan-specific-message {
+          background: rgba(14, 165, 233, 0.1);
+          padding: 10px 15px;
+          border-radius: 8px;
+          margin-bottom: 15px;
+          font-size: 0.9rem;
+          color: #0c4a6e;
+          font-weight: 600;
+          text-align: center;
+        }
+
         .quick-coupons {
           margin-bottom: 15px;
           display: flex;
@@ -544,7 +563,7 @@ const PaymentModal = ({ plan, onClose }) => {
         .coupon-button {
           color: white;
           border: none;
-          padding: ${isMobile ? '12px 16px' : '15px 20px'};
+          padding: ${isMobile ? '15px 20px' : '18px 25px'};
           border-radius: 12px;
           font-size: ${isMobile ? '0.9rem' : '1rem'};
           font-weight: bold;
@@ -552,8 +571,13 @@ const PaymentModal = ({ plan, onClose }) => {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
           transform: scale(1);
-          flex: ${isMobile ? '1' : 'none'};
-          min-width: ${isMobile ? '0' : '140px'};
+          min-width: ${isMobile ? 'auto' : '180px'};
+          text-align: center;
+        }
+
+        .featured-coupon {
+          border: 3px solid #fff;
+          animation: pulse 3s infinite;
         }
 
         .coupon-button:hover {
@@ -564,11 +588,19 @@ const PaymentModal = ({ plan, onClose }) => {
         .coupon-discount {
           font-size: 0.8rem;
           opacity: 0.9;
+          margin-bottom: 2px;
         }
 
         .coupon-code {
           font-family: 'Space Mono', monospace;
           letter-spacing: 0.5px;
+          margin-bottom: 4px;
+        }
+
+        .coupon-description {
+          font-size: 0.7rem;
+          opacity: 0.8;
+          line-height: 1.2;
         }
 
         .manual-coupon {
@@ -686,6 +718,7 @@ const PaymentModal = ({ plan, onClose }) => {
           padding: 2px 6px;
           border-radius: 4px;
           font-family: 'Space Mono', monospace;
+          font-weight: bold;
         }
 
         .error-message {
