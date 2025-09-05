@@ -41,7 +41,6 @@ const PaymentModal = ({ plan, onClose }) => {
       if (response.ok && result.valid) {
         setAppliedCoupon(result.coupon);
         setCouponError('');
-        // NO remover el cupón aplicado, mantenerlo visible
       } else {
         setCouponError(result.message || 'Cupón inválido');
         setAppliedCoupon(null);
@@ -90,13 +89,12 @@ const PaymentModal = ({ plan, onClose }) => {
         mp = new window.MercadoPago(publicKey);
         const bricksBuilder = mp.bricks();
 
-        // IMPORTANTE: Usar el precio final (con descuento si aplica)
         cardPaymentBrickController = await bricksBuilder.create(
           "cardPayment",
           "cardPaymentBrick_container",
           {
             initialization: {
-              amount: finalPrice, // Usar precio con descuento
+              amount: finalPrice,
             },
             callbacks: {
               onReady: () => {
@@ -114,7 +112,7 @@ const PaymentModal = ({ plan, onClose }) => {
                     token: cardFormData.token,
                     issuer_id: cardFormData.issuer_id,
                     payment_method_id: cardFormData.payment_method_id,
-                    transaction_amount: Number(finalPrice), // Precio con descuento
+                    transaction_amount: Number(finalPrice),
                     installments: Number(cardFormData.installments) || 1,
                     description: `${plan.title}${appliedCoupon ? ` (Cupón: ${appliedCoupon.code})` : ''}`,
                     payer: {
@@ -124,7 +122,6 @@ const PaymentModal = ({ plan, onClose }) => {
                         number: cardFormData.payer?.identification?.number || '12345678901234567890',
                       },
                     },
-                    // Metadatos para tracking
                     metadata: {
                       original_price: plan.price,
                       final_price: finalPrice,
@@ -153,7 +150,6 @@ const PaymentModal = ({ plan, onClose }) => {
                     throw new Error(result.error || 'Error en el pago');
                   }
 
-                  // Pago exitoso - redirigir a página de éxito
                   window.location.href = '/gracias.html';
                   
                 } catch (error) {
@@ -182,7 +178,7 @@ const PaymentModal = ({ plan, onClose }) => {
         cardPaymentBrickController.unmount();
       }
     };
-  }, [plan, finalPrice]); // Dependencia en finalPrice para recrear cuando cambie
+  }, [plan, finalPrice]);
 
   if (!plan) return null;
 
@@ -232,7 +228,6 @@ const PaymentModal = ({ plan, onClose }) => {
           <h2 style={{ color: '#E5E7EB', marginBottom: '0.5rem' }}>Completa tu pago</h2>
           <h3 style={{ color: '#CF2323', fontSize: '1.5rem' }}>{plan.title}</h3>
           
-          {/* Mostrar precios */}
           <div style={{ margin: '1rem 0' }}>
             {appliedCoupon ? (
               <div>
@@ -275,7 +270,6 @@ const PaymentModal = ({ plan, onClose }) => {
           </div>
         </div>
 
-        {/* Sección de cupón */}
         <div style={{ 
           background: 'rgba(17, 17, 17, 0.8)',
           padding: '1.5rem',
@@ -329,7 +323,6 @@ const PaymentModal = ({ plan, onClose }) => {
                 </div>
               )}
               
-              {/* Códigos sugeridos */}
               <div style={{ fontSize: '0.8rem', color: '#A1A1AA' }}>
                 💡 Códigos disponibles: BIENVENIDO50, TRANSFORMACION30, AHORRA20
               </div>
@@ -375,7 +368,6 @@ const PaymentModal = ({ plan, onClose }) => {
           )}
         </div>
         
-        {/* Mensajes de error */}
         {error && (
           <div style={{
             color: '#ff4444',
@@ -389,7 +381,6 @@ const PaymentModal = ({ plan, onClose }) => {
           </div>
         )}
         
-        {/* Loading */}
         {isLoading && !error && (
           <div style={{ 
             textAlign: 'center', 
@@ -409,7 +400,6 @@ const PaymentModal = ({ plan, onClose }) => {
           </div>
         )}
         
-        {/* Contenedor del Brick */}
         <div id="cardPaymentBrick_container"></div>
       </div>
     </div>
