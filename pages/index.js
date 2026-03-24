@@ -3,6 +3,23 @@ import Head from 'next/head';
 
 const APP_URL = 'https://app.umbratraining.com';
 
+// ── MercadoPago Links ──
+// Carlo: reemplaza estos con tus links reales de MercadoPago
+const MP_LINKS = {
+  shadows: {
+    monthly:   '#LINK_MP_SHADOWS_1M',
+    quarterly: '#LINK_MP_SHADOWS_3M',
+    biannual:  '#LINK_MP_SHADOWS_6M',
+  },
+  coaching: {
+    monthly:   '#LINK_MP_COACHING_1M',
+    quarterly: '#LINK_MP_COACHING_3M',
+    biannual:  '#LINK_MP_COACHING_6M',
+  },
+  // Promos activas
+  promo: null, // { name: 'Coaching 3 meses', price: '$2,799', link: '#LINK_MP_PROMO' }
+};
+
 // ── Pricing Data ──────
 const GUIDES = [
   { name: 'Pérdida de Grasa', desc: 'Déficit real, refeeds, cardio. Sin perder músculo.', price: 399 },
@@ -383,7 +400,7 @@ export default function HomePage() {
                 <li>Análisis de correlación sueño/progreso</li>
                 <li>Historial de ajustes y decisiones</li>
               </ul>
-              <a href={`${APP_URL}/register`} className="plan-cta primary">Empezar ahora</a>
+              <a href={MP_LINKS.shadows[period]} className="plan-cta primary" target="_blank" rel="noopener">Suscribirme →</a>
             </div>
 
             {/* COACHING */}
@@ -405,7 +422,7 @@ export default function HomePage() {
                 <li>Responde Carlo, no un equipo</li>
                 <li>Mínimo 3 meses</li>
               </ul>
-              <a href="#coaches" className="plan-cta secondary">Solicitar lugar</a>
+              <a href="https://t.me/Umbratraining" className="plan-cta secondary" target="_blank" rel="noopener">Agendar llamada →</a>
             </div>
           </div>
         </div>

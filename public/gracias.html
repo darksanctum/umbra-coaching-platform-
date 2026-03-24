@@ -3,88 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pago Exitoso - Umbra Training</title>
+    <title>¡Bienvenido a Umbra! — Pago Confirmado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: linear-gradient(135deg, #000000, #CF2323);
+            background: #000;
             color: #fff;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            justify-content: center;
+            padding: 24px;
         }
-        .container {
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 70% 50% at 50% 30%, black 20%, transparent 100%);
+        }
+        .card {
+            position: relative; z-index: 1;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 48px 40px;
+            max-width: 440px;
+            width: 100%;
             text-align: center;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 40px;
-            border-radius: 15px;
-            border: 2px solid #CF2323;
-            box-shadow: 0 0 30px rgba(207, 35, 35, 0.5);
-            max-width: 500px;
-            width: 90%;
+        }
+        .check {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 28px;
+            animation: pop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes pop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
         h1 {
-            color: #CF2323;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(207, 35, 35, 0.8);
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
         }
-        .success-icon {
-            font-size: 4rem;
-            color: #00FF00;
-            margin-bottom: 20px;
-        }
-        .next-step {
-            background: linear-gradient(45deg, #CF2323, #FF4444);
-            border: none;
-            color: white;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 20px 0;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        .next-step:hover {
-            background: linear-gradient(45deg, #FF4444, #CF2323);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(207, 35, 35, 0.4);
-        }
-        .instructions {
-            margin: 20px 0;
+        .sub {
+            font-size: 14px;
+            color: #888;
             line-height: 1.6;
-            font-size: 1.1rem;
+            margin-bottom: 32px;
         }
-        .telegram-icon {
-            color: #0088cc;
-            font-size: 1.5rem;
-            margin-right: 10px;
+        .steps {
+            text-align: left;
+            margin-bottom: 32px;
+        }
+        .step {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid #141414;
+        }
+        .step:last-child { border-bottom: none; }
+        .step-num {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            background: #141414;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+            flex-shrink: 0;
+            color: #888;
+        }
+        .step-text {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        .step-text strong { color: #fff; }
+        .cta {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            background: #fff;
+            color: #000;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: -0.01em;
+            transition: all 0.2s;
+        }
+        .cta:hover {
+            opacity: 0.85;
+            box-shadow: 0 0 24px rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+        .note {
+            font-size: 12px;
+            color: #555;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+        .logo {
+            position: relative; z-index: 1;
+            margin-bottom: 32px;
+            opacity: 0.4;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="success-icon">✅</div>
-        <h1>¡Pago Confirmado!</h1>
-        <p class="instructions">
-            Tu pago ha sido procesado exitosamente.<br>
-            <strong>Siguiente paso:</strong> Contactanos por Telegram para recibir tu formulario de evaluación inicial.
-        </p>
-        
-        <a href="https://t.me/kojicoachbot" target="_blank" class="next-step">
-            <span class="telegram-icon">📱</span>
-            Contactar por Telegram
+    <div class="logo">UMBRA TRAINING</div>
+    <div class="card">
+        <div class="check">✓</div>
+        <h1>¡Pago confirmado!</h1>
+        <p class="sub">Tu suscripción está activa. Solo falta un paso para comenzar tu transformación.</p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text"><strong>Abre Telegram</strong> y presiona el botón de abajo</div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text">Presiona <strong>/start</strong> en el bot de Umbra</div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text">Completa tu <strong>evaluación inicial</strong> — tu programa estará listo en 24–48h</div>
+            </div>
+        </div>
+
+        <a href="https://t.me/UmbraCoachBot?start=paid" class="cta" target="_blank">
+            Abrir Telegram →
         </a>
-        
-        <p style="font-size: 0.9rem; color: #ccc; margin-top: 20px;">
-            Una vez que nos contactes, recibirás tu formulario de evaluación.<br>
-            Después de completarlo, tu programa personalizado estará listo entre 1 a 4 días.
+
+        <p class="note">
+            ¿Problemas? Escríbenos directo: <a href="https://t.me/Umbratraining" style="color:#888;">@Umbratraining</a>
         </p>
     </div>
 </body>
