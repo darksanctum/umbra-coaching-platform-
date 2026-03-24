@@ -344,3 +344,154 @@ button { font-family: inherit; cursor: pointer; }
   .guides-grid { grid-template-columns: 1fr; }
   .flow-step { min-width: 60px; padding: 8px 10px; }
 }
+
+/* ══════════════════════════════════════════════════
+   MOTION DESIGN — Sandro Ieva inspired
+   ══════════════════════════════════════════════════ */
+
+/* ── Background Grid ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 30%, transparent 100%);
+}
+
+/* ── Hero Ambient Glow ── */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  animation: glow-pulse 6s ease-in-out infinite;
+}
+.hero { position: relative; }
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+
+/* ── Glassmorphism Cards ── */
+.pricing-card,
+.guide-card,
+.flow-step,
+.bundle-card,
+.b2b-card,
+.blueprint-card,
+.waitlist-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(10,10,10,0.6);
+}
+
+/* ── Card Hover Lift ── */
+.pricing-card,
+.guide-card,
+.flow-step,
+.bundle-card,
+.b2b-card {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease,
+              box-shadow 0.35s ease;
+}
+.pricing-card:hover,
+.guide-card:hover,
+.b2b-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.flow-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+/* ── Featured Card Glow ── */
+.pricing-card.featured {
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08),
+              0 0 40px rgba(255,255,255,0.03);
+}
+.pricing-card.featured:hover {
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.12),
+              0 8px 40px rgba(255,255,255,0.06);
+  transform: translateY(-6px);
+}
+
+/* ── Featured Badge Shimmer ── */
+.featured-badge {
+  overflow: hidden;
+  position: absolute;
+}
+.featured-badge::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 200%; height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+  animation: badge-shimmer 3s ease-in-out infinite;
+}
+@keyframes badge-shimmer {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
+}
+
+/* ── Floating Animation (for hero badge) ── */
+.hero-badge {
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ── CTA Button Glow on Hover ── */
+.btn-primary:hover,
+.btn-nav-cta:hover,
+.plan-cta.primary:hover {
+  box-shadow: 0 0 20px rgba(255,255,255,0.15);
+}
+
+/* ── Smooth Reveal Stagger ── */
+.reveal { transition-delay: 0s; }
+.reveal:nth-child(2) { transition-delay: 0.08s; }
+.reveal:nth-child(3) { transition-delay: 0.16s; }
+.reveal:nth-child(4) { transition-delay: 0.24s; }
+
+/* ── Pricing Card Stagger ── */
+.pricing-grid .pricing-card:nth-child(1) { transition-delay: 0s; }
+.pricing-grid .pricing-card:nth-child(2) { transition-delay: 0.1s; }
+.pricing-grid .pricing-card:nth-child(3) { transition-delay: 0.2s; }
+
+/* ── Guide Cards Stagger ── */
+.guides-grid .guide-card:nth-child(1) { transition-delay: 0s; }
+.guides-grid .guide-card:nth-child(2) { transition-delay: 0.06s; }
+.guides-grid .guide-card:nth-child(3) { transition-delay: 0.12s; }
+.guides-grid .guide-card:nth-child(4) { transition-delay: 0.18s; }
+
+/* ── Flow Steps Stagger ── */
+.flow .flow-step:nth-child(1) { transition-delay: 0s; }
+.flow .flow-step:nth-child(3) { transition-delay: 0.06s; }
+.flow .flow-step:nth-child(5) { transition-delay: 0.12s; }
+.flow .flow-step:nth-child(7) { transition-delay: 0.16s; }
+.flow .flow-step:nth-child(9) { transition-delay: 0.22s; }
+.flow .flow-step:nth-child(11) { transition-delay: 0.28s; }
+
+/* ── Inner Glow Border on Focus ── */
+.blueprint-form input:focus,
+.waitlist-form input:focus {
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), inset 0 0 12px rgba(255,255,255,0.03);
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
