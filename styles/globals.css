@@ -487,6 +487,71 @@ body::before {
   box-shadow: 0 0 0 1px rgba(255,255,255,0.1), inset 0 0 12px rgba(255,255,255,0.03);
 }
 
+/* ── Cursor Glow ── */
+.cursor-glow {
+  position: fixed; top: 0; left: 0;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+}
+
+/* ── Hero Orbs ── */
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  will-change: transform;
+}
+.orb-1 {
+  width: 300px; height: 300px;
+  top: 20%; left: 15%;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  animation: orb-wander-1 12s ease-in-out infinite;
+}
+.orb-2 {
+  width: 200px; height: 200px;
+  top: 40%; right: 10%;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+  animation: orb-wander-2 16s ease-in-out infinite;
+}
+.orb-3 {
+  width: 160px; height: 160px;
+  top: 10%; right: 30%;
+  background: radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 70%);
+  animation: orb-wander-3 20s ease-in-out infinite;
+}
+
+@keyframes orb-wander-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(40px, -30px) scale(1.1); }
+  50% { transform: translate(-20px, 40px) scale(0.9); }
+  75% { transform: translate(30px, 20px) scale(1.05); }
+}
+@keyframes orb-wander-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-50px, 30px) scale(1.15); }
+  66% { transform: translate(30px, -40px) scale(0.85); }
+}
+@keyframes orb-wander-3 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25% { transform: translate(20px, 30px) scale(1.1) rotate(90deg); }
+  50% { transform: translate(-30px, -20px) scale(0.95) rotate(180deg); }
+  75% { transform: translate(40px, -10px) scale(1.05) rotate(270deg); }
+}
+
+/* ── Card 3D Transform Origin ── */
+.pricing-card,
+.guide-card,
+.b2b-card,
+.bundle-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
 /* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -494,4 +559,5 @@ body::before {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .cursor-glow, .hero-orb { display: none; }
 }

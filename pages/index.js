@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 
 const APP_URL = 'https://app.umbratraining.com';
@@ -57,6 +57,90 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // ── PASS 3: Interactive motion effects ──
+  useEffect(() => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    // 1) Cursor-following glow spotlight
+    const glow = document.getElementById('cursor-glow');
+    let glowX = 0, glowY = 0, currentX = 0, currentY = 0;
+    let glowRaf;
+    const updateGlow = () => {
+      currentX += (glowX - currentX) * 0.08;
+      currentY += (glowY - currentY) * 0.08;
+      if (glow) {
+        glow.style.transform = `translate(${currentX - 200}px, ${currentY - 200}px)`;
+      }
+      glowRaf = requestAnimationFrame(updateGlow);
+    };
+    const onMouseMove = (e) => { glowX = e.clientX; glowY = e.clientY; };
+    document.addEventListener('mousemove', onMouseMove, { passive: true });
+    glowRaf = requestAnimationFrame(updateGlow);
+
+    // 2) 3D perspective tilt on cards
+    const tiltCards = document.querySelectorAll('.pricing-card, .guide-card, .b2b-card, .bundle-card');
+    const handleTiltEnter = (e) => {
+      e.currentTarget.style.transition = 'transform 0.1s ease-out';
+    };
+    const handleTiltMove = (e) => {
+      const card = e.currentTarget;
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -4;
+      const rotateY = ((x - centerX) / centerX) * 4;
+      card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+    };
+    const handleTiltLeave = (e) => {
+      const card = e.currentTarget;
+      card.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+      card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+    };
+    tiltCards.forEach((card) => {
+      card.addEventListener('mouseenter', handleTiltEnter);
+      card.addEventListener('mousemove', handleTiltMove);
+      card.addEventListener('mouseleave', handleTiltLeave);
+    });
+
+    // 3) Card inner spotlight (radial gradient following cursor)
+    tiltCards.forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        card.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,0.03) 0%, rgba(10,10,10,0.6) 50%)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.background = 'rgba(10,10,10,0.6)';
+      });
+    });
+
+    // 4) Parallax depth on scroll
+    const parallaxElements = document.querySelectorAll('.hero-title, .hero-subtitle, .hero-badge');
+    const onScrollParallax = () => {
+      const scrollY = window.scrollY;
+      parallaxElements.forEach((el, i) => {
+        const speed = 0.05 + (i * 0.02);
+        el.style.transform = `translateY(${scrollY * speed}px)`;
+      });
+    };
+    window.addEventListener('scroll', onScrollParallax, { passive: true });
+
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(glowRaf);
+      window.removeEventListener('scroll', onScrollParallax);
+      tiltCards.forEach((card) => {
+        card.removeEventListener('mouseenter', handleTiltEnter);
+        card.removeEventListener('mousemove', handleTiltMove);
+        card.removeEventListener('mouseleave', handleTiltLeave);
+      });
+    };
+  }, []);
+
   const handleBlueprint = async (e) => {
     e.preventDefault();
     if (!blueprintEmail) return;
@@ -106,8 +190,16 @@ export default function HomePage() {
         <a href={APP_URL} className="btn-nav-cta">Empezar gratis</a>
       </nav>
 
+      {/* Cursor glow */}
+      <div id="cursor-glow" className="cursor-glow" />
+
       {/* ── HERO ── */}
       <div className="hero">
+        {/* Animated gradient orbs */}
+        <div className="hero-orb orb-1" />
+        <div className="hero-orb orb-2" />
+        <div className="hero-orb orb-3" />
+
         <div className="hero-badge reveal">Entrenamiento basado en evidencia</div>
         <h1 className="hero-title reveal">
           El sistema completo.<br /><em>Sin adivinar.</em>
