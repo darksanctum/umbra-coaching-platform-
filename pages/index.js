@@ -180,7 +180,10 @@ export default function HomePage() {
 
       {/* ── NAV ── */}
       <nav className="site-nav">
-        <div className="nav-logo">UMBRA <span>Training</span></div>
+        <div className="nav-logo">
+          <img src="/logo-white.png" alt="Umbra" className="nav-logo-img" />
+          UMBRA <span>Training</span>
+        </div>
         <ul className="nav-links">
           <li><a href="#guias">Guías</a></li>
           <li><a href="/blog">Blog</a></li>
@@ -199,6 +202,11 @@ export default function HomePage() {
         <div className="hero-orb orb-1" />
         <div className="hero-orb orb-2" />
         <div className="hero-orb orb-3" />
+
+        {/* Logo centerpiece */}
+        <div className="hero-logo-wrap reveal">
+          <img src="/logo-white.png" alt="Umbra Training" className="hero-logo" />
+        </div>
 
         <div className="hero-badge reveal">Entrenamiento basado en evidencia</div>
         <h1 className="hero-title reveal">

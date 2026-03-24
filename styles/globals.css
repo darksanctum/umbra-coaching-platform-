@@ -30,7 +30,8 @@ button { font-family: inherit; cursor: pointer; }
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
 }
-.nav-logo { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+.nav-logo { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+.nav-logo-img { width: 28px; height: 28px; object-fit: contain; }
 .nav-logo span { font-weight: 400; color: var(--text-2); }
 .nav-links { display: flex; gap: 28px; list-style: none; }
 .nav-links a { font-size: 13px; color: var(--text-2); transition: color 0.2s; }
@@ -48,6 +49,34 @@ button { font-family: inherit; cursor: pointer; }
 .hero {
   text-align: center;
   padding: 160px 24px 60px;
+}
+/* ── Hero Logo Centerpiece ── */
+.hero-logo-wrap {
+  position: relative;
+  display: flex; justify-content: center;
+  margin-bottom: 32px;
+}
+.hero-logo {
+  width: 120px; height: 120px;
+  object-fit: contain;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 30px rgba(255,255,255,0.08));
+  animation: logo-float 6s ease-in-out infinite;
+}
+.hero-logo-wrap::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: glow-pulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 .hero-badge {
   display: inline-block;
