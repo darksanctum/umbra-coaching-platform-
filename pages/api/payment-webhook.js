@@ -1,4 +1,54 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
+import crypto from 'crypto';
+
+const APP_BASE_URL = process.env.APP_BASE_URL || 'https://umbratraining.com';
+const MAKE_WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL || '';
+
+function normalizeHeaderValue(value) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function extractPaymentId(req) {
+  return req.query?.['data.id'] || req.body?.data?.id || null;
+}
+
+function isMercadoPagoSignatureValid(req) {
+  const secret = process.env.MP_WEBHOOK_SECRET;
+  if (!secret) {
+    return process.env.NODE_ENV !== 'production';
+  }
+
+  const xSignature = normalizeHeaderValue(req.headers['x-signature']);
+  const xRequestId = normalizeHeaderValue(req.headers['x-request-id']);
+  const paymentId = extractPaymentId(req);
+
+  if (!xSignature || !xRequestId || !paymentId) {
+    return false;
+  }
+
+  const parts = String(xSignature).split(',');
+  let ts = '';
+  let v1 = '';
+
+  for (const part of parts) {
+    const [key, value] = part.split('=');
+    if (key === 'ts') ts = value;
+    if (key === 'v1') v1 = value;
+  }
+
+  if (!ts || !v1) {
+    return false;
+  }
+
+  const manifest = crypto
+    .createHmac('sha256', secret)
+    .update(`id:${paymentId};request-id:${xRequestId};ts:${ts};`)
+    .digest('hex');
+
+  const expected = Buffer.from(v1);
+  const actual = Buffer.from(manifest);
+  return expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
+}
 
 export default async function handler(req, res) {
   // Solo acepta POST requests
@@ -7,34 +57,31 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('=== WEBHOOK RECIBIDO ===');
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
+    const paymentId = extractPaymentId(req);
 
-    const { type, data, action } = req.body;
+    if (!isMercadoPagoSignatureValid(req)) {
+      return res.status(401).json({ error: 'Invalid Mercado Pago signature' });
+    }
+
+    const { type } = req.body;
 
     // Verificar que es una notificación de pago
     if (type !== 'payment') {
-      console.log('Tipo de notificación ignorado:', type);
       return res.status(200).json({ received: true });
     }
 
-    const paymentId = data?.id;
     if (!paymentId) {
       console.error('No se recibió payment ID');
       return res.status(400).json({ error: 'Payment ID missing' });
     }
 
-    console.log('Payment ID recibido:', paymentId, 'Tipo:', typeof paymentId);
-
-    // Si es una simulación, responder OK sin procesar
-    if (paymentId === "123456" || paymentId === 123456 || String(paymentId) === "123456") {
-      console.log('🧪 Simulación detectada - respondiendo OK');
-      return res.status(200).json({ 
-        received: true, 
+    // Si es una simulación, responder OK sin procesar solo fuera de prod
+    if (process.env.NODE_ENV !== 'production' && (paymentId === '123456' || paymentId === 123456 || String(paymentId) === '123456')) {
+      return res.status(200).json({
+        received: true,
         simulation: true,
         payment_id: paymentId,
-        message: "Simulación procesada correctamente"
+        message: 'Simulación procesada correctamente'
       });
     }
 
@@ -42,27 +89,14 @@ export default async function handler(req, res) {
     const accessToken = process.env.MP_ACCESS_TOKEN;
     if (!accessToken) {
       console.error('MP_ACCESS_TOKEN no configurado');
-      return res.status(200).json({ 
-        received: true,
-        error: 'Server configuration error',
-        payment_id: paymentId 
-      });
+      return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    console.log('Procesando pago real con ID:', paymentId);
-    
     const client = new MercadoPagoConfig({ accessToken });
     const payment = new Payment(client);
 
     // Obtener detalles completos del pago
     const paymentData = await payment.get({ id: paymentId });
-    
-    console.log('=== DATOS DEL PAGO ===');
-    console.log('ID:', paymentData.id);
-    console.log('Status:', paymentData.status);
-    console.log('Amount:', paymentData.transaction_amount);
-    console.log('Description:', paymentData.description);
-    console.log('Payer Email:', paymentData.payer?.email);
 
     // Procesar según el estado del pago
     switch (paymentData.status) {
@@ -80,68 +114,62 @@ export default async function handler(req, res) {
     }
 
     // Responder OK a Mercado Pago
-    res.status(200).json({ 
-      received: true, 
+    res.status(200).json({
+      received: true,
       payment_id: paymentId,
-      status: paymentData.status 
+      status: paymentData.status
     });
 
   } catch (error) {
     console.error('=== ERROR EN WEBHOOK ===');
     console.error('Message:', error.message);
     console.error('Stack:', error.stack);
-    
-    // SIEMPRE responder OK para evitar reintentos infinitos
-    console.log('Respondiendo OK para evitar reintentos');
-    res.status(200).json({ 
-      received: true, 
-      error: 'Internal server error handled',
-      message: error.message,
-      payment_id: req.body?.data?.id 
-    });
+    res.status(500).json({ error: 'Internal server error', payment_id: req.body?.data?.id });
   }
 }
 
 // Función para procesar pagos aprobados
 async function procesarPagoAprobado(payment) {
   console.log('🎉 PAGO APROBADO - Iniciando flujo de automatización');
-  
+
   const clienteData = {
     email: payment.payer?.email,
     plan: payment.description,
     monto: payment.transaction_amount,
     paymentId: payment.id,
-    fecha: new Date().toISOString()
+    fecha: new Date().toISOString(),
+    appBaseUrl: APP_BASE_URL,
   };
 
   try {
     // Notificar por Telegram (si tienes bot configurado)
     await enviarNotificacionTelegram(clienteData);
-    
-    // INTEGRACIÓN CON MAKE - Enviar datos para automatización completa
-    const makeWebhookUrl = "https://hook.us2.make.com/ui9ogao6usp81vgc9x1yewzfhc4y8uq5";
-    
-    console.log('📤 Enviando datos a Make para automatización...');
-    
-    const makeResponse = await fetch(makeWebhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tipo: 'nuevo_pago',
-        plan: payment.description,
-        email: payment.payer?.email,
-        monto: payment.transaction_amount,
-        payment_id: payment.id,
-        fecha_pago: new Date().toISOString()
-      })
-    });
-    
-    if (makeResponse.ok) {
-      console.log('✅ Datos enviados a Make exitosamente');
+
+    if (MAKE_WEBHOOK_URL) {
+      console.log('📤 Enviando datos a Make para automatización...');
+
+      const makeResponse = await fetch(MAKE_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tipo: 'nuevo_pago',
+          plan: payment.description,
+          email: payment.payer?.email,
+          monto: payment.transaction_amount,
+          payment_id: payment.id,
+          fecha_pago: new Date().toISOString()
+        })
+      });
+
+      if (makeResponse.ok) {
+        console.log('✅ Datos enviados a Make exitosamente');
+      } else {
+        console.error('❌ Error enviando a Make:', await makeResponse.text());
+      }
     } else {
-      console.error('❌ Error enviando a Make:', await makeResponse.text());
+      console.log('ℹ️ MAKE_WEBHOOK_URL no configurado, saltando automatización externa');
     }
-    
+
     console.log('✅ Flujo de automatización completado');
   } catch (error) {
     console.error('❌ Error en automatización:', error);
@@ -161,10 +189,10 @@ async function procesarPagoPendiente(payment) {
 // Función básica para notificación Telegram
 async function enviarNotificacionTelegram(clienteData) {
   console.log('📱 Enviando notificación por Telegram');
-  
+
   const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;
   const telegramChatId = process.env.TELEGRAM_CHAT_ID;
-  
+
   if (!telegramBotToken || !telegramChatId) {
     console.log('Telegram no configurado - saltando notificación');
     return;
@@ -190,7 +218,7 @@ async function enviarNotificacionTelegram(clienteData) {
         parse_mode: 'Markdown'
       })
     });
-    
+
     if (response.ok) {
       console.log('✅ Notificación Telegram enviada');
     } else {

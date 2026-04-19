@@ -1,5 +1,7 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 
+const APP_BASE_URL = process.env.APP_BASE_URL || 'https://umbratraining.com';
+
 export default async function handler(req, res) {
   console.log('=== INICIO DE REQUEST ===');
   console.log('Method:', req.method);
@@ -57,12 +59,12 @@ export default async function handler(req, res) {
         },
       },
       // URL de webhook
-      notification_url: `https://umbratraining.com/api/payment-webhook`,
+      notification_url: `${APP_BASE_URL}/api/payment-webhook`,
       // URLs de redirección después del pago
       back_urls: {
-        success: "https://umbratraining.com/gracias.html",
-        failure: "https://umbratraining.com/pago-fallido.html",
-        pending: "https://umbratraining.com/pago-pendiente.html"
+        success: `${APP_BASE_URL}/gracias.html`,
+        failure: `${APP_BASE_URL}/pago-fallido.html`,
+        pending: `${APP_BASE_URL}/pago-pendiente.html`
       },
       auto_return: "approved"
     };
